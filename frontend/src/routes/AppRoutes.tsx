@@ -1,29 +1,36 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Login from "@/componentes/Login/Login";
-import PrincipalLayout from "@/componentes/Layout/PrincipalLayout";
-import Dashboard from "@/componentes/Paginas/Dashboard";
-import Usuarios from "@/componentes/Paginas/Usuarios";
-import ProtectedRoute from "@/routes/ProtectedRoute";
-import Produtos from "@/componentes/Paginas/Produtos";
+import { menuItems } from "@/config/menuConfig";
+import { EmptyWorkspace } from "@/componentes/Paginas/EmptyWorkspace";
+import { AppLayout } from "@/componentes/Layout/AppLayout";
 
 export default function AppRoutes() {
+ // 🔹 Função recursiva para gerar rotas de menu e submenus
+ const renderRoutesFromMenu = (items: any[]) => {
+  return items.flatMap((item) => {
+    const routes: JSX.Element[] = [];
+
+    if (item.path && item.component) {
+      routes.push(<Route key={item.path} path={item.path.replace(/^\//, "")} element={<item.component />} />);
+    }
+
+    if (item.children) {
+      routes.push(...renderRoutesFromMenu(item.children));
+    }
+
+    return routes;
+  });
+};
+
   return (
-    <BrowserRouter>
-      <Routes>
+    <Routes>
+    <Route path="/login" element={<Login />} />
 
-        {/* Tela de login */}
-        <Route path="/" element={<Login />} />
-
-        {/* ROTAS PRIVADAS — só acessa se tiver sessão */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<PrincipalLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/usuarios" element={<Usuarios />} />
-            <Route path="/produtos" element={<Produtos />} />
-          </Route>
-        </Route>
-
-      </Routes>
-    </BrowserRouter>
+    {/* Área autenticada */}
+    <Route path="/" element={<AppLayout />}>
+      <Route index element={<EmptyWorkspace />} />
+      {renderRoutesFromMenu(menuItems)}
+    </Route>
+  </Routes>
   );
 }

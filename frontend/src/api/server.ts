@@ -8,17 +8,23 @@ class ServerClient {
   private readonly TOKEN_KEY = "token";
 
   constructor() {
-    const baseURL =
-      import.meta.env.VITE_API_BASE_URL ||
-      (window.location.hostname === "localhost"
-        ? "http://localhost:8080/meuapp/api"
-        : "https://api.meusistema.com/api");
+    // Detecta dinamicamente o contexto base (ex: /meuapp) e se está em ambiente de dev (Vite)
+    const pathParts = window.location.pathname.split("/").filter(Boolean);
+    const contextPath = pathParts.length > 0 && !pathParts[0].includes(".")
+      ? `/${pathParts[0]}`
+      : "";
+
+    // Se estiver rodando no Vite (porta 5173), aponta para o Tomcat (porta 8080)
+    const isLocalDev = window.location.port === "5173";
+    const baseURL = isLocalDev
+      ? `http://localhost:8080${contextPath}/api`
+      : `${window.location.origin}${contextPath}/api`;
 
     console.log("🌐 Server Base URL:", baseURL);
 
     this.client = axios.create({
       baseURL,
-      timeout: 15000,
+      timeout: 15_000,
       headers: { "Content-Type": "application/json" },
     });
 
@@ -36,17 +42,21 @@ class ServerClient {
       (response) => response,
       (error) => {
         const status = error.response?.status;
-        console.log("analise status", status)
-        if (status === 401) {
+        const requestUrl = error.config?.url || "";
+
+        console.log("🔎 Interceptor status:", status, "URL:", requestUrl);
+
+        // ⚠️ só redireciona se NÃO for o endpoint de login
+        if (status === 401 && !requestUrl.includes("/auth/login")) {
           console.warn("Sessão expirada ou não autorizada.");
-          this.logout();
-          window.location.href = "/"; // redireciona para login
+          this.logout(); // logout faz o redirect
         } else if (status === 403) {
           console.error("Acesso negado.");
         } else if (status >= 500) {
           console.error("Erro interno no servidor.");
         }
 
+        // ❌ retorna o erro pro front tratar com toast, sem recarregar
         return Promise.reject(error);
       }
     );
@@ -56,17 +66,21 @@ class ServerClient {
   // 🔐 AUTENTICAÇÃO
   // ======================================================
 
-  async login(login: string, password: string): Promise<string | undefined> {
+  async login(login: string, password: string): Promise<{ token: string; userName: string }> {
+    console.log("pasasndo pelo login", localStorage)
     try {
+      if (localStorage.getItem(this.TOKEN_KEY)) {
+        localStorage.removeItem(this.TOKEN_KEY);
+      }
       const response = await this.client.post<{ token: string, userName: string }>("/auth/login", {
         login,
         password,
       });
-      const token = response.data?.token;
+      const { token, userName } = response.data;
       if (token) {
         localStorage.setItem(this.TOKEN_KEY, token);
       }
-      return response.data?.userName;
+      return { token, userName };
     } catch (error: any) {
       console.error("❌ Erro no login:", error);
       throw error;
@@ -75,7 +89,10 @@ class ServerClient {
 
   logout() {
     this.clearToken();
-    window.location.href = "/";
+    // redireciona dinamicamente para o contexto atual
+    const pathParts = window.location.pathname.split("/");
+    const contextPath = pathParts.length > 1 && pathParts[1] ? `/${pathParts[1]}` : "";
+    window.location.href = `${window.location.origin}${contextPath}/`;
   }
 
   private clearToken() {

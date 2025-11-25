@@ -6,11 +6,19 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { MenuItem } from "@/types/MenuItem";
 import Session from "@/utils/session";
+import { useAuth } from "@/context/AuthContext"; // ✅ importa o contexto
 
-export default function SidebarMenu({ collapsed, toggleCollapsed }: SidebarMenuProps) {
+interface SidebarMenuProps {
+  collapsed: boolean;
+  toggleCollapsed: () => void;
+  className?: string; // 🚨 Adicionado: Prop opcional
+}
+
+export default function SidebarMenu({ collapsed, toggleCollapsed, className }: SidebarMenuProps) {
   const [openSub, setOpenSub] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth(); // ✅ pega o método de logout
 
   const handleItemClick = (item: MenuItem) => {
     if (item.children) {
@@ -19,11 +27,13 @@ export default function SidebarMenu({ collapsed, toggleCollapsed }: SidebarMenuP
     }
 
     if (item.action === "logout") {
+      const confirmed = window.confirm("Deseja realmente sair?");
+      if (!confirmed) return;
+      logout();
       sessionStorage.clear();
-      navigate("/");
+      navigate("/login", { replace: true });
       return;
     }
-
     if (item.path) {
       navigate(item.path);
     }
@@ -35,7 +45,7 @@ export default function SidebarMenu({ collapsed, toggleCollapsed }: SidebarMenuP
     : "U";
   return (
     <motion.aside
-      className={`sidebar ${collapsed ? "collapsed" : ""}`}
+      className={`sidebar ${className || ""}`} // 🚨 Aplicado: Use a prop aqui
       animate={{ width: collapsed ? 70 : 250 }}
       transition={{ duration: 0.25 }}
     >

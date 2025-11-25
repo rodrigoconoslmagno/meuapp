@@ -1,4 +1,3 @@
-// src/components/Login/Login.tsx
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
@@ -8,6 +7,7 @@ import serverBack from "@/api/server";
 import { UIHelper } from "@/utils/UIHelper";
 import { useNavigate } from "react-router-dom";
 import Session from '@/utils/session';
+import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
     const [login, setUsuario] = useState('');
@@ -15,8 +15,11 @@ export default function Login() {
     const [erroLogin, setErroLogin] = useState(false);
     const [erroSenha, setErroSenha] = useState(false);
     const navigate = useNavigate();
+    const { login: authLogin } = useAuth(); // ✅ pega a função de login e renomeia para authLogin
   
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleLogin = async (e?: React.FormEvent) => {
+      e?.preventDefault(); // ✅ protege tanto no submit quanto no click
+    
       setErroLogin(false);
       setErroSenha(false);
     
@@ -36,13 +39,13 @@ export default function Login() {
         UIHelper.error("Preencha todos os campos obrigatórios.");
         return;
       }
-
+    
       try {
-        const response = await serverBack.login( login, senha ) as string;
-        console.log("✅ Login OK:", response);
-        Session.saveUser(response);
-        UIHelper.success(`Bem-vindo, ${response || "usuário"}!`);
-        navigate("/dashboard");
+        const { token, userName }  = await serverBack.login(login, senha);
+        Session.saveUser(userName);
+        authLogin(token);
+        UIHelper.success(`Bem-vindo, ${userName || "usuário"}!`);
+        navigate("/", { replace: true });
       } catch (error: any) {
         console.error("❌ Erro de login:", error);
         UIHelper.error("Usuário ou senha incorretos.");

@@ -1,4 +1,3 @@
-// src/components/shared/UIHelper.tsx
 import { Toast } from "primereact/toast";
 import { confirmDialog } from "primereact/confirmdialog";
 import { RefObject } from "react";

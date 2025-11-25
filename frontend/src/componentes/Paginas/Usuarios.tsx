@@ -4,7 +4,7 @@ import { Usuario } from "@/entidades/Usuario";
 import { LabelText } from "../label/LabelText";
 import Utils from "@/utils/Utils";
 import { EditCheckBox } from "../checkbox/EditCheckBox";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { UIHelper } from "@/utils/UIHelper";
 
 interface FiltroUsuario {
@@ -93,10 +93,22 @@ export default function Usuarios() {
     validarSenhas(senha, confirmarSenha);
   }, [senha, confirmarSenha]);
 
+  // ✅ CERTO: Memoriza o array para não mudar a referência
+  const acoesExtras = useMemo(() => [
+    {
+      label: "Exportar",
+      icon: "pi pi-download",
+      onClick: () => console.log("Exportar usuários"),
+      className: "p-button-secondary",
+    },
+  ], []); // [] significa que nunca muda
+
   return (
     <Crud<Usuario, FiltroUsuario>
+      pageTitle="Usuário"
+      serviceName="usuarioService"
       entityType={Usuario}
-      title="Usuários"
+      extraActions={acoesExtras}
       columns={[
         { field: "nome", header: "Nome" },
         { field: "login", header: "Login" },
