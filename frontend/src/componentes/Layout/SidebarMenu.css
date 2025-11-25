@@ -1,12 +1,17 @@
 /* Sidebar geral */
 .sidebar {
+  /* MUITO IMPORTANTE: Use 100% e não 100vh, pois o pai já controla a altura */
+  height: 100% !important;
   background: #263238;
   color: white;
-  height: 100vh;
-  overflow: hidden;
+  overflow-y: auto; /* Permite scroll se o menu for muito alto */
+  overflow-x: hidden;
   border-right: 1px solid rgba(255,255,255,0.06);
   display: flex;
   flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0; /* ESTE é o mais importante para o layout horizontal */
 }
 
 /* Header */
