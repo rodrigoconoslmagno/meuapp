@@ -18,7 +18,6 @@ if [ "$ACTIVE_PROFILE" = "prod" ]; then
     
     # Usamos as variáveis PG* que o Railway SEMPRE injeta.
     DB_HOST="${DB_HOST}"
-    DB_PORT="${PGPORT}"
     
     # 🛑 CRUCIAL: FORÇAMOS O NOME DO DB PARA O NOME CORRETO (meuapp)
     DB_NAME="meuapp" 
