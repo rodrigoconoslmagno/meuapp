@@ -1,6 +1,7 @@
 package br.com.meuapp.entidades;
 
 import jakarta.persistence.*;
+import br.com.meuapp.exception.UserException;
 import br.com.meuapp.persistence.BaseEntity; 
 
 @Entity
@@ -15,6 +16,15 @@ public class Usuario extends BaseEntity<Integer> {
 	private String login;
 	private boolean ativo;	
 	private String senha;
+	
+	@PreRemove
+	private void bloqueiaExclusaoAdmin() {
+		// Se o ID for 1, lançamos uma exceção
+        if (id != null && id.equals(1L)) {
+            // Lançar uma exceção de Runtime específica
+        	throw new UserException("Não é possível ecluir o usuário com o ID 1, apenas alterar os dados");
+        }
+	}
 	
 	public String getNome() {
 		return nome;

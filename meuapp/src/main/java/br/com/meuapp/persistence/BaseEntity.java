@@ -13,7 +13,7 @@ public abstract class BaseEntity<ID extends Serializable> implements Serializabl
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
-    private ID id;
+	protected ID id;
     
     @Column(name = "datacriacao", nullable = false, updatable = false)
     private LocalDateTime dataCriacao;

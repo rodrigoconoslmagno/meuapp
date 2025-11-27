@@ -18,6 +18,14 @@ public class UsuarioService {
         this.genericDao = genericDao;
     }
 
+    public Usuario buscaPorId(Integer id) {
+    	if (id != null) {
+    		return genericDao.buscarPorId(Usuario.class, id);
+    	}
+    	
+    	return null;
+    }
+    
     // ======================================================
     // 🔹 LISTAR
     // ======================================================
@@ -38,7 +46,7 @@ public class UsuarioService {
     		Usuario senha = genericDao.buscarPorId(Usuario.class, id);
     		usuario.setSenha(senha.getSenha());
     	} else {
-            if (!usuario.getSenha().startsWith("$2a$")) {
+            if (!usuario.getSenha().isEmpty() && !usuario.getSenha().startsWith("$2a$")) {
                 usuario.setSenha(BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt()));
             }
     	}

@@ -33,7 +33,7 @@ public class AuthService {
         Usuario usuario = usuarios.get(0);
         
         // 🔹 2. Valida senha com BCrypt
-        if (usuario == null || !BCrypt.checkpw(senha, usuario.getSenha())) {
+        if (usuario == null || (usuario.isAtivo() && !BCrypt.checkpw(senha, usuario.getSenha()))) {
         	return null;
         }
 

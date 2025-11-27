@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  postgres_meuapp:
+      # Usa a imagem oficial do PostgreSQL
+      image: postgres:15-alpine
+      container_name: meuapp-db
+
+      # 1. Configuração de Secrets (Usando arquivos para as credenciais)
+      environment:
+        # Variáveis que apontam para o caminho dos arquivos de secrets dentro do container.
+        # O Postgres usará o *conteúdo* desses arquivos para a criação inicial do DB/User.
+        POSTGRES_USER_FILE: /run/secrets/pg_user 
+        POSTGRES_PASSWORD_FILE: /run/secrets/pg_password
+        POSTGRES_DB_FILE: /run/secrets/pg_db
+        
+        # Variável que define a timezone para garantir consistência de datas (opcional)
+        TZ: America/Sao_Paulo
+        
+      # 2. Mapeamento de Portas
+      # Permite que você acesse o DB da sua máquina host usando pgAdmin/DBeaver em localhost:5432
+      ports:
+        - "5432:5432"
+        
+      # 3. Mapeamento de Volumes e Secrets
+      volumes:
+        # Garante que os dados do banco de dados persistam (permanecem após o container ser removido)
+        - postgres_data:/var/lib/postgresql/data
+        
+        # Mapeia os scripts de inicialização (01-cria-app-user.sql)
+        - ./init-scripts:/docker-entrypoint-initdb.d
+        
+        # Mapeia os arquivos de Secrets para um diretório seguro (/run/secrets) dentro do container
+        # O ":ro" significa read-only (somente leitura)
+        - ./secrets/pg_user.txt:/run/secrets/pg_user:ro
+        - ./secrets/pg_password.txt:/run/secrets/pg_password:ro
+        - ./secrets/pg_db.txt:/run/secrets/pg_db:ro
+
+      # Garante que o container tente reiniciar se falhar
+      restart: always
+
+  tomcat-meuapp:
+    container_name: meuapp-api
+  
+    # Instrução de Build: Usa o Dockerfile multi-stage configurado
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    
+    environment:
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update # Cuidado: Mude para 'validate' em produção
+      # Adicionando o hostname do DB, necessário para o entrypoint montar a URL
+      DB_HOST: postgres_meuapp 
+      DB_PORT: 5432
+    
+    ports:
+      - "8080:8080"
+      
+    # Mapeamento de Volumes: Montagem dos Secrets para o Entrypoint.sh ler
+    volumes:
+      - ./secrets/pg_user.txt:/run/secrets/pg_user:ro
+      - ./secrets/pg_password.txt:/run/secrets/pg_password:ro
+      - ./secrets/pg_db.txt:/run/secrets/pg_db:ro
+      
+    # Dependência: Garante que o DB inicie antes da aplicação
+    depends_on:
+      - postgres_meuapp
+    
+    restart: always	  
+
+volumes:
+  postgres_data:

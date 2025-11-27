@@ -1,5 +1,6 @@
 package br.com.meuapp.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -15,13 +16,29 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class PersistenceConfig {
 
+	// 🔑 INJEÇÃO DOS VALORES PASSADOS PELO DOCKER VIA -D
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+    
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+    
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
+
+    @Value("${spring.jpa.hibernate.ddl-auto}")
+    private String ddlAuto;
+	
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5433/postgres");
-        dataSource.setUsername("meuapp");
-        dataSource.setPassword("123456");
+        
+        // ✅ USA AS VARIÁVEIS INJETADAS
+        dataSource.setUrl(dbUrl); 
+        dataSource.setUsername(dbUsername);
+        dataSource.setPassword(dbPassword);
+        
         return dataSource;
     }
 
@@ -33,7 +50,7 @@ public class PersistenceConfig {
         emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         Properties props = new Properties();
-        props.setProperty("hibernate.hbm2ddl.auto", "update");
+        props.setProperty("hibernate.hbm2ddl.auto", ddlAuto);
         props.setProperty("hibernate.show_sql", "true");
         props.setProperty("hibernate.format_sql", "true");
         props.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
