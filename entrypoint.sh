@@ -1,6 +1,11 @@
 #!/bin/sh
 set -e
 
+# ADICIONE ISTO PARA DEBUG:
+echo "--- VARIÁVEIS DE AMBIENTE INJETADAS ---"
+printenv
+echo "---------------------------------------"
+
 # 1. Determina o perfil ativo (dev ou prod)
 # SPRING_PROFILES_ACTIVE será injetado pelo docker-compose ou pelo Railway
 export ACTIVE_PROFILE=${SPRING_PROFILES_ACTIVE:-dev}
@@ -12,7 +17,7 @@ if [ "$ACTIVE_PROFILE" = "prod" ]; then
     # -- Ambiente Railway/Produção --
     
     # Usamos as variáveis PG* que o Railway SEMPRE injeta.
-    DB_HOST="${{postgres-meuapp.PGHOST}}"
+    DB_HOST="${DB_HOST}"
     DB_PORT="${PGPORT}"
     
     # 🛑 CRUCIAL: FORÇAMOS O NOME DO DB PARA O NOME CORRETO (meuapp)
