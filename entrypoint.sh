@@ -24,8 +24,8 @@ if [ "$ACTIVE_PROFILE" = "prod" ]; then
     DB_NAME="${DB_NAME}" 
     
     # Usamos as credenciais que o Railway injetou (PGUSER, PGPASSWORD)
-    SPRING_DATASOURCE_USERNAME="${PGUSER}"
-    SPRING_DATASOURCE_PASSWORD="${PGPASSWORD}"
+    SPRING_DATASOURCE_USERNAME="${DB_USER}"
+    SPRING_DATASOURCE_PASSWORD="${DB_PASS}"
     
 else
     # -- Ambiente Local/Desenvolvimento --
