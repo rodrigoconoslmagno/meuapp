@@ -14,17 +14,15 @@ if [ "$ACTIVE_PROFILE" = "prod" ]; then
     # já são injetadas no ambiente pela UI do Railway.
     
     # Se a variável SPRING_DATASOURCE_URL existir (injecao da UI), use-a para construir o argumento.
-    if [ -n "$SPRING_DATASOURCE_URL" ]; then
-        DATASOURCE_URL_ARG="-Dspring.datasource.url=${SPRING_DATASOURCE_URL}"
-    else
-        # 🛑 FALLBACK (APENAS SE O SPRING_DATASOURCE_URL FALHAR)
-        # Use as variáveis PGUSER, PGPASSWORD e PGHOST, que são sempre injetadas.
-        DATASOURCE_URL_ARG="-Dspring.datasource.url=jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}"
-        SPRING_DATASOURCE_USERNAME="${PGUSER}"
-        SPRING_DATASOURCE_PASSWORD="${PGPASSWORD}"
-        
-        echo "Aviso: SPRING_DATASOURCE_URL VAZIA. Usando variaveis padrao PGH*."
-    fi
+	DB_HOST="${PGHOST}"
+    DB_PORT="${PGPORT}"
+    
+    # 🛑 FORÇAMOS O NOME DO DB PARA O NOME CORRETO DA SUA APLICAÇÃO
+    DB_NAME="meuapp"
+    
+    # Usamos as credenciais geradas que o Railway já injetou (e que estão no erro do log!)
+    SPRING_DATASOURCE_USERNAME="${PGUSER}"
+    SPRING_DATASOURCE_PASSWORD="${PGPASSWORD}"
 else
     # -- Ambiente Local/Desenvolvimento -- (Mantenha inalterado)
     DB_HOST="postgres-meuapp"
