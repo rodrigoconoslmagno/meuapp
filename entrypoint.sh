@@ -12,7 +12,7 @@ if [ "$ACTIVE_PROFILE" = "prod" ]; then
     # -- Ambiente Railway/Produção --
     # O Railway injeta as variáveis como DB_USER, DB_PASS, etc.
     # O HOST do DB será o nome do serviço no docker-compose (funciona na rede interna do Railway)
-    DB_HOST="postgres_meuapp"
+    DB_HOST="postgres-meuapp"
     DB_PORT="5432"
     SPRING_DATASOURCE_USERNAME="${DB_USER}"
     SPRING_DATASOURCE_PASSWORD="${DB_PASS}"
@@ -21,7 +21,7 @@ if [ "$ACTIVE_PROFILE" = "prod" ]; then
 else
     # -- Ambiente Local/Desenvolvimento --
     # O Docker local lê as credenciais dos arquivos secretos mapeados.
-    DB_HOST="postgres_meuapp"
+    DB_HOST="postgres-meuapp"
     DB_PORT="5432"
     SPRING_DATASOURCE_USERNAME=$(cat /run/secrets/pg_user)
     SPRING_DATASOURCE_PASSWORD=$(cat /run/secrets/pg_password)
