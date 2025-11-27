@@ -17,9 +17,10 @@ services:
   	volumes: []
     
     environment:
-      SPRING_JPA_HIBERNATE_DDL_AUTO: validate # Cuidado: Mude para 'validate' em produção
-      # Adicionando o hostname do DB, necessário para o entrypoint montar a URL
+	  # Adicionando o hostname do DB, necessário para o entrypoint montar a URL
 	  SPRING_PROFILES_ACTIVE: prod # Define o perfil DEV
+	  # Cuidado: Mude para 'validate' em produção
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate 
     
     ports: []
 
