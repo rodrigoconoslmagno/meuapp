@@ -18,9 +18,10 @@ if [ "$ACTIVE_PROFILE" = "prod" ]; then
     
     # Usamos as variáveis PG* que o Railway SEMPRE injeta.
     DB_HOST="${DB_HOST}"
+    BD_PORT="${DB_PORT}"
     
     # 🛑 CRUCIAL: FORÇAMOS O NOME DO DB PARA O NOME CORRETO (meuapp)
-    DB_NAME="meuapp" 
+    DB_NAME="${DB_NAME}" 
     
     # Usamos as credenciais que o Railway injetou (PGUSER, PGPASSWORD)
     SPRING_DATASOURCE_USERNAME="${PGUSER}"
