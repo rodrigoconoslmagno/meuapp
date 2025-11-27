@@ -10,52 +10,40 @@ echo "Iniciando aplicação no ambiente: ${ACTIVE_PROFILE}"
 # 2. Leitura das Credenciais e HOST:
 if [ "$ACTIVE_PROFILE" = "prod" ]; then
     # -- Ambiente Railway/Produção --
-    # Nenhuma variável local precisa ser definida. As variáveis SPRING_DATASOURCE_URL, USER, PASS, etc.
-    # já são injetadas no ambiente pela UI do Railway.
     
-    # Se a variável SPRING_DATASOURCE_URL existir (injecao da UI), use-a para construir o argumento.
-	DB_HOST="${PGHOST}"
+    # Usamos as variáveis PG* que o Railway SEMPRE injeta.
+    DB_HOST="${PGHOST}"
     DB_PORT="${PGPORT}"
     
-    # 🛑 FORÇAMOS O NOME DO DB PARA O NOME CORRETO DA SUA APLICAÇÃO
-    DB_NAME="meuapp"
+    # 🛑 CRUCIAL: FORÇAMOS O NOME DO DB PARA O NOME CORRETO (meuapp)
+    DB_NAME="meuapp" 
     
-    # Usamos as credenciais geradas que o Railway já injetou (e que estão no erro do log!)
+    # Usamos as credenciais que o Railway injetou (PGUSER, PGPASSWORD)
     SPRING_DATASOURCE_USERNAME="${PGUSER}"
     SPRING_DATASOURCE_PASSWORD="${PGPASSWORD}"
+    
 else
-    # -- Ambiente Local/Desenvolvimento -- (Mantenha inalterado)
+    # -- Ambiente Local/Desenvolvimento --
     DB_HOST="postgres-meuapp"
     DB_PORT="5432"
     SPRING_DATASOURCE_USERNAME=$(cat /run/secrets/pg_user)
     SPRING_DATASOURCE_PASSWORD=$(cat /run/secrets/pg_password)
     DB_NAME=$(cat /run/secrets/pg_db)
-
-    # Constrói o argumento para DEV
-    DATASOURCE_URL_ARG="-Dspring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}"
 fi
 
 # Exporta todas as variáveis para o ambiente do contêiner
 export SPRING_DATASOURCE_USERNAME
 export SPRING_DATASOURCE_PASSWORD
+export DB_NAME
 export SPRING_JPA_HIBERNATE_DDL_AUTO="${SPRING_JPA_HIBERNATE_DDL_AUTO}"
 
-echo "Configurando a conexão com: ${DB_HOST}:${DB_PORT}/${DB_NAME}"
-
-# Condicionalmente, injeta o URL completo se ele existir (modo prod)
-if [ "$SPRING_DATASOURCE_URL" ]; then
-    # Usa a URL completa injetada pelo Railway. Isso sobrescreve a lógica do host/port/db
-    DATASOURCE_URL_ARG="-Dspring.datasource.url=${SPRING_DATASOURCE_URL}"
-else
-    # Se não for injetado (modo dev), constrói a URL manualmente
-    DATASOURCE_URL_ARG="-Dspring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}"
-fi
+echo "Configurando a conexão com: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}"
 
 # 3. Construção dos Argumentos da JVM (CATALINA_OPTS)
-# Injeta as propriedades diretamente na aplicação Spring Boot
+# A URL é construída AQUI para garantir o prefixo JDBC e o nome do DB correto.
 export CATALINA_OPTS="$CATALINA_OPTS \
     -Dspring.profiles.active=${ACTIVE_PROFILE} \
-    ${DATASOURCE_URL_ARG} \
+    -Dspring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME} \
     -Dspring.datasource.username=${SPRING_DATASOURCE_USERNAME} \
     -Dspring.datasource.password=${SPRING_DATASOURCE_PASSWORD} \
     -Dspring.jpa.hibernate.ddl-auto=${SPRING_JPA_HIBERNATE_DDL_AUTO}"
