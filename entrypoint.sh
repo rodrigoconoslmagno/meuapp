@@ -12,10 +12,10 @@ if [ "$ACTIVE_PROFILE" = "prod" ]; then
     # -- Ambiente Railway/Produção --
     # O Railway injeta as variáveis como DB_USER, DB_PASS, etc.
     # O HOST do DB será o nome do serviço no docker-compose (funciona na rede interna do Railway)
-	SPRING_DATASOURCE_URL="${SPRING_DATASOURCE_URL}"
+	# SPRING_DATASOURCE_URL="${SPRING_DATASOURCE_URL}"
     SPRING_DATASOURCE_USERNAME="${DB_USER}"
     SPRING_DATASOURCE_PASSWORD="${DB_PASS}"
-    DB_NAME="${DB_NAME}"
+    # DB_NAME="${DB_NAME}"
     
 else
     # -- Ambiente Local/Desenvolvimento --
