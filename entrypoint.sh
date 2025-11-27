@@ -1,25 +1,46 @@
 #!/bin/sh
 set -e
 
-# 1. Leitura dos Secrets: USER e PASSWORD (Já existiam)
-export SPRING_DATASOURCE_USERNAME=$(cat /run/secrets/pg_user)
-export SPRING_DATASOURCE_PASSWORD=$(cat /run/secrets/pg_password)
+# 1. Determina o perfil ativo (dev ou prod)
+# SPRING_PROFILES_ACTIVE será injetado pelo docker-compose ou pelo Railway
+export ACTIVE_PROFILE=${SPRING_PROFILES_ACTIVE:-dev}
 
-# 2. Leitura do DB Name: (Adicionado na última etapa)
-export DB_NAME=$(cat /run/secrets/pg_db) 
+echo "Iniciando aplicação no ambiente: ${ACTIVE_PROFILE}"
 
-echo "Secrets do DB (User, Password, Name) lidos e injetados no ambiente."
+# 2. Leitura das Credenciais e HOST:
+if [ "$ACTIVE_PROFILE" = "prod" ]; then
+    # -- Ambiente Railway/Produção --
+    # O Railway injeta as variáveis como DB_USER, DB_PASS, etc.
+    # O HOST do DB será o nome do serviço no docker-compose (funciona na rede interna do Railway)
+    DB_HOST="postgres_meuapp"
+    DB_PORT="5432"
+    SPRING_DATASOURCE_USERNAME="${DB_USER}"
+    SPRING_DATASOURCE_PASSWORD="${DB_PASS}"
+    DB_NAME="${DB_NAME}"
+    
+else
+    # -- Ambiente Local/Desenvolvimento --
+    # O Docker local lê as credenciais dos arquivos secretos mapeados.
+    DB_HOST="postgres_meuapp"
+    DB_PORT="5432"
+    SPRING_DATASOURCE_USERNAME=$(cat /run/secrets/pg_user)
+    SPRING_DATASOURCE_PASSWORD=$(cat /run/secrets/pg_password)
+    DB_NAME=$(cat /run/secrets/pg_db)
+fi
 
-# Exporta a variável DDL-AUTO (que vem do docker-compose)
+# Exporta todas as variáveis para o ambiente do contêiner
+export SPRING_DATASOURCE_USERNAME
+export SPRING_DATASOURCE_PASSWORD
+export DB_NAME
 export SPRING_JPA_HIBERNATE_DDL_AUTO="${SPRING_JPA_HIBERNATE_DDL_AUTO}"
 
-# 2. Construção dos Argumentos da JVM (CATALINA_OPTS)
-# Isso garante que as variáveis do contêiner sejam lidas como System Properties (-D)
-# e sobreponham TUDO que estiver no application.properties do WAR.
+echo "Configurando a conexão com: ${DB_HOST}:${DB_PORT}/${DB_NAME}"
 
+# 3. Construção dos Argumentos da JVM (CATALINA_OPTS)
+# Injeta as propriedades diretamente na aplicação Spring Boot
 export CATALINA_OPTS="$CATALINA_OPTS \
-    -Dspring.profiles.active=prod \
-    -Dspring.datasource.url=jdbc:postgresql://postgres_meuapp:5432/${DB_NAME} \
+    -Dspring.profiles.active=${ACTIVE_PROFILE} \
+    -Dspring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME} \
     -Dspring.datasource.username=${SPRING_DATASOURCE_USERNAME} \
     -Dspring.datasource.password=${SPRING_DATASOURCE_PASSWORD} \
     -Dspring.jpa.hibernate.ddl-auto=${SPRING_JPA_HIBERNATE_DDL_AUTO}"

@@ -50,8 +50,7 @@ services:
     environment:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update # Cuidado: Mude para 'validate' em produção
       # Adicionando o hostname do DB, necessário para o entrypoint montar a URL
-      DB_HOST: postgres_meuapp 
-      DB_PORT: 5432
+      SPRING_PROFILES_ACTIVE: dev # Define o perfil DEV
     
     ports:
       - "8080:8080"
