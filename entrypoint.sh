@@ -12,7 +12,7 @@ if [ "$ACTIVE_PROFILE" = "prod" ]; then
     # -- Ambiente Railway/Produção --
     
     # Usamos as variáveis PG* que o Railway SEMPRE injeta.
-    DB_HOST="${{postgres-meuapp.PGHOST}}"
+    DB_HOST="${PGHOST}"
     DB_PORT="${PGPORT}"
     
     # 🛑 CRUCIAL: FORÇAMOS O NOME DO DB PARA O NOME CORRETO (meuapp)
