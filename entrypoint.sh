@@ -24,6 +24,7 @@ if [ "$ACTIVE_PROFILE" = "prod" ]; then
         SPRING_DATASOURCE_PASSWORD="${PGPASSWORD}"
         
         echo "Aviso: SPRING_DATASOURCE_URL VAZIA. Usando variaveis padrao PGH*."
+    fi
 else
     # -- Ambiente Local/Desenvolvimento -- (Mantenha inalterado)
     DB_HOST="postgres-meuapp"
