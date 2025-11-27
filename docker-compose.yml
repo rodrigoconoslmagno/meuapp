@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  postgres_meuapp:
+  postgres-meuapp:
       # Usa a imagem oficial do PostgreSQL
       image: postgres:15-alpine
       container_name: meuapp-db
@@ -63,7 +63,7 @@ services:
       
     # Dependência: Garante que o DB inicie antes da aplicação
     depends_on:
-      - postgres_meuapp
+      - postgres-meuapp
     
     restart: always	  
 
