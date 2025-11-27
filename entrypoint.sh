@@ -10,27 +10,35 @@ echo "Iniciando aplicação no ambiente: ${ACTIVE_PROFILE}"
 # 2. Leitura das Credenciais e HOST:
 if [ "$ACTIVE_PROFILE" = "prod" ]; then
     # -- Ambiente Railway/Produção --
-    # O Railway injeta as variáveis como DB_USER, DB_PASS, etc.
-    # O HOST do DB será o nome do serviço no docker-compose (funciona na rede interna do Railway)
-	SPRING_DATASOURCE_URL="${SPRING_DATASOURCE_URL}"
-    SPRING_DATASOURCE_USERNAME="${DB_USER}"
-    SPRING_DATASOURCE_PASSWORD="${DB_PASS}"
-    DB_NAME="${DB_NAME}"
+    # Nenhuma variável local precisa ser definida. As variáveis SPRING_DATASOURCE_URL, USER, PASS, etc.
+    # já são injetadas no ambiente pela UI do Railway.
     
+    # Se a variável SPRING_DATASOURCE_URL existir (injecao da UI), use-a para construir o argumento.
+    if [ -n "$SPRING_DATASOURCE_URL" ]; then
+        DATASOURCE_URL_ARG="-Dspring.datasource.url=${SPRING_DATASOURCE_URL}"
+    else
+        # 🛑 FALLBACK (APENAS SE O SPRING_DATASOURCE_URL FALHAR)
+        # Use as variáveis PGUSER, PGPASSWORD e PGHOST, que são sempre injetadas.
+        DATASOURCE_URL_ARG="-Dspring.datasource.url=jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}"
+        SPRING_DATASOURCE_USERNAME="${PGUSER}"
+        SPRING_DATASOURCE_PASSWORD="${PGPASSWORD}"
+        
+        echo "Aviso: SPRING_DATASOURCE_URL VAZIA. Usando variaveis padrao PGH*."
 else
-    # -- Ambiente Local/Desenvolvimento --
-    # O Docker local lê as credenciais dos arquivos secretos mapeados.
+    # -- Ambiente Local/Desenvolvimento -- (Mantenha inalterado)
     DB_HOST="postgres-meuapp"
     DB_PORT="5432"
     SPRING_DATASOURCE_USERNAME=$(cat /run/secrets/pg_user)
     SPRING_DATASOURCE_PASSWORD=$(cat /run/secrets/pg_password)
     DB_NAME=$(cat /run/secrets/pg_db)
+
+    # Constrói o argumento para DEV
+    DATASOURCE_URL_ARG="-Dspring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}"
 fi
 
 # Exporta todas as variáveis para o ambiente do contêiner
 export SPRING_DATASOURCE_USERNAME
 export SPRING_DATASOURCE_PASSWORD
-export DB_NAME
 export SPRING_JPA_HIBERNATE_DDL_AUTO="${SPRING_JPA_HIBERNATE_DDL_AUTO}"
 
 echo "Configurando a conexão com: ${DB_HOST}:${DB_PORT}/${DB_NAME}"
