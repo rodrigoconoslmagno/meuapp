@@ -32,6 +32,8 @@ else
 fi
 
 # Exporta todas as variáveis para o ambiente do contêiner
+export DB_HOST
+export DB_PORT
 export SPRING_DATASOURCE_USERNAME
 export SPRING_DATASOURCE_PASSWORD
 export DB_NAME
