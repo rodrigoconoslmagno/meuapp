@@ -12,8 +12,7 @@ if [ "$ACTIVE_PROFILE" = "prod" ]; then
     # -- Ambiente Railway/Produção --
     # O Railway injeta as variáveis como DB_USER, DB_PASS, etc.
     # O HOST do DB será o nome do serviço no docker-compose (funciona na rede interna do Railway)
-    DB_HOST="postgres-meuapp"
-    DB_PORT="5432"
+	SPRING_DATASOURCE_URL="${SPRING_DATASOURCE_URL}"
     SPRING_DATASOURCE_USERNAME="${DB_USER}"
     SPRING_DATASOURCE_PASSWORD="${DB_PASS}"
     DB_NAME="${DB_NAME}"
@@ -36,11 +35,20 @@ export SPRING_JPA_HIBERNATE_DDL_AUTO="${SPRING_JPA_HIBERNATE_DDL_AUTO}"
 
 echo "Configurando a conexão com: ${DB_HOST}:${DB_PORT}/${DB_NAME}"
 
+# Condicionalmente, injeta o URL completo se ele existir (modo prod)
+if [ "$SPRING_DATASOURCE_URL" ]; then
+    # Usa a URL completa injetada pelo Railway. Isso sobrescreve a lógica do host/port/db
+    DATASOURCE_URL_ARG="-Dspring.datasource.url=${SPRING_DATASOURCE_URL}"
+else
+    # Se não for injetado (modo dev), constrói a URL manualmente
+    DATASOURCE_URL_ARG="-Dspring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}"
+fi
+
 # 3. Construção dos Argumentos da JVM (CATALINA_OPTS)
 # Injeta as propriedades diretamente na aplicação Spring Boot
 export CATALINA_OPTS="$CATALINA_OPTS \
     -Dspring.profiles.active=${ACTIVE_PROFILE} \
-    -Dspring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME} \
+    ${DATASOURCE_URL_ARG} \
     -Dspring.datasource.username=${SPRING_DATASOURCE_USERNAME} \
     -Dspring.datasource.password=${SPRING_DATASOURCE_PASSWORD} \
     -Dspring.jpa.hibernate.ddl-auto=${SPRING_JPA_HIBERNATE_DDL_AUTO}"
