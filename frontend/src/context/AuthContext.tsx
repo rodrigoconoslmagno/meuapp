@@ -1,60 +1,68 @@
-// src/context/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect } from "react";
+import serverBack from "@/api/server";
 
 interface AuthContextProps {
   isAuthenticated: boolean;
-  token?: string;
-  loading: boolean; // ✅ novo estado
+  token?: string | null;
   login: (token: string) => void;
   logout: () => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextProps>({
   isAuthenticated: false,
-  loading: true,
   login: () => {},
   logout: () => {},
+  isLoading: true,
 });
 
+export const useAuth = () => useContext(AuthContext);
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [token, setToken] = useState<string | undefined>();
-  const [loading, setLoading] = useState(true); // ✅ inicia em “carregando”
+  const [token, setToken] = useState<string | null>();
+  const [isLoading, setIsLoading] = useState(true);
+  const isAuthenticated = !!token;
 
-  // 🔹 Ao iniciar, verifica se há token salvo (mantém login persistente)
-  useEffect(() => {
-    const savedToken = localStorage.getItem("token");
-    if (savedToken) {
-      setToken(savedToken);
-    }
-    setLoading(false); // 🔹 finaliza a verificação
-  }, []);
-
-  // 🔹 Efetua login: salva token e marca como autenticado
-  const login = (newToken: string) => {
+  const login = (newToken: string | null) => {
     setToken(newToken);
-    localStorage.setItem("token", newToken);
+    console.log("login", newToken, token, isAuthenticated)
   };
 
-  // 🔹 Efetua logout: limpa token e storage
-  const logout = () => {
+  const logout = async () => {
+    await serverBack.logout(); 
+
     setToken(undefined);
-    localStorage.removeItem("token");
   };
+
+  useEffect(() => {
+    const validateSession = async () => {
+      try {
+        if (serverBack.getToken()) {
+          const newAccessToken: string | null = await serverBack.refreshToken(); 
+          login(newAccessToken);
+          console.log("refresh auth ", newAccessToken, token)
+        }
+      } catch (error) {
+        setToken(undefined); 
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    validateSession();
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated: !!token,
+        isAuthenticated,
         token,
-        loading,
         login,
         logout,
+        isLoading,
       }}
     >
-      {/* 🔹 Evita renderizar o app até confirmar se há token */}
-      {!loading && children}
+      {children} 
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => useContext(AuthContext);
+}

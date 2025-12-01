@@ -3,9 +3,9 @@ import Login from "@/componentes/Login/Login";
 import { menuItems } from "@/config/menuConfig";
 import { EmptyWorkspace } from "@/componentes/Paginas/EmptyWorkspace";
 import { AppLayout } from "@/componentes/Layout/AppLayout";
+import ProtectedRoute from "@/routes/ProtectedRoute";
 
 export default function AppRoutes() {
- // 🔹 Função recursiva para gerar rotas de menu e submenus
  const renderRoutesFromMenu = (items: any[]) => {
   return items.flatMap((item) => {
     const routes: JSX.Element[] = [];
@@ -24,13 +24,15 @@ export default function AppRoutes() {
 
   return (
     <Routes>
-    <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Login />} />
 
-    {/* Área autenticada */}
-    <Route path="/" element={<AppLayout />}>
-      <Route index element={<EmptyWorkspace />} />
-      {renderRoutesFromMenu(menuItems)}
-    </Route>
+      {/* Área autenticada */}
+      <Route path="/" element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          <Route index element={<EmptyWorkspace />} />
+          {renderRoutesFromMenu(menuItems)}
+        </Route>
+      </Route>
   </Routes>
   );
 }

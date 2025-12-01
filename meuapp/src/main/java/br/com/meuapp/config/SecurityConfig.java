@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -12,6 +15,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
 
@@ -35,17 +40,27 @@ public class SecurityConfig {
 	        	        "/", "/index.html", "/favicon.ico",
 	        	        "/assets/**", "/static/**", "/vite.svg",
 	        	        "/manifest.json", "/api/auth/**",
-	        	        "/error", "/WEB-INF/**"
+	        	        "/error", "/WEB-INF/**", "/login"
 	        	    ).permitAll()
 	        	    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+	        	    .requestMatchers(HttpMethod.GET, "/**").permitAll()
 	        	    .anyRequest().authenticated()
 	        )
+	        .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedHandler()))
 	        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();
     }
 
+ // NOVO: Cria o manipulador de erro 401
+    private AuthenticationEntryPoint unauthorizedHandler() {
+        return (request, response, authException) -> {
+            // Garante que o Spring Security retorne 401 para todas as requisições não autenticadas
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        };
+    }
+    
     /**
      * CORS programático sem application.properties
      */
@@ -79,5 +94,12 @@ public class SecurityConfig {
                         .allowCredentials(true);
             }
         };
+    }
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        // Aumente a força de 10 (padrão) para 12. 
+        // Teste 13 ou 14 se o tempo de login for aceitável (abaixo de 1 segundo).
+        return new BCryptPasswordEncoder(12); 
     }
 }

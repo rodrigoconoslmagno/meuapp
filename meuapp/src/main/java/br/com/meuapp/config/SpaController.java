@@ -12,8 +12,8 @@ public class SpaController {
      * Fallback SPA — compatível com Spring Boot 3 / PathPatternParser
      * Redireciona apenas rotas React que não sejam APIs ou assets.
      */
-    @GetMapping(value = {"/",
-    	"/{path:^(?!api|auth|assets|static|WEB-INF|META-INF|index\\.html|vite\\.svg|error).*}"
+	@GetMapping(value = {"/",
+	    	"/{path:^(?!api|auth|assets|static|WEB-INF|META-INF|index\\.html|vite\\.svg|error|favicon\\.ico).*}"
     })
     public String forward() {
         return "forward:/index.html";

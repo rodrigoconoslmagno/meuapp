@@ -1,107 +1,109 @@
-// src/services/server.ts
-import axios, { AxiosInstance, AxiosResponse } from "axios";
-
-type HttpMethod = "GET" | "POST";
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { UIHelper } from "@/utils/UIHelper";
+import session from "@/utils/session";
 
 class ServerClient {
   private client: AxiosInstance;
-  private readonly TOKEN_KEY = "token";
+  private accessToken: string | null = null;
 
   constructor() {
-    // Detecta dinamicamente o contexto base (ex: /meuapp) e se está em ambiente de dev (Vite)
     const pathParts = window.location.pathname.split("/").filter(Boolean);
     const contextPath = pathParts.length > 0 && !pathParts[0].includes(".")
       ? `/${pathParts[0]}`
       : "";
 
-    // Se estiver rodando no Vite (porta 5173), aponta para o Tomcat (porta 8080)
     const isLocalDev = window.location.port === "5173";
     const baseURL = isLocalDev
       ? `http://localhost:8080${contextPath}/api`
       : `${window.location.origin}${contextPath}/api`;
 
-    console.log("🌐 Server Base URL:", baseURL);
-
     this.client = axios.create({
       baseURL,
       timeout: 15_000,
       headers: { "Content-Type": "application/json" },
+      withCredentials: true, 
     });
 
-    // ✅ Intercepta TODAS as requisições e insere o token JWT
     this.client.interceptors.request.use((config) => {
-      const token = localStorage.getItem(this.TOKEN_KEY);
+      const token = this.accessToken; 
       if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;
+          config.headers["Authorization"] = `Bearer ${token}`;
       }
       return config;
-    });
+  });
 
-    // ✅ Intercepta respostas e trata erros globais
-    this.client.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        const status = error.response?.status;
-        const requestUrl = error.config?.url || "";
+  this.client.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      const status = error.response?.status;
+      const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean }; 
+      const requestUrl = originalRequest.url || "";
 
-        console.log("🔎 Interceptor status:", status, "URL:", requestUrl);
-
-        // ⚠️ só redireciona se NÃO for o endpoint de login
-        if (status === 401 && !requestUrl.includes("/auth/login")) {
-          console.warn("Sessão expirada ou não autorizada.");
-          this.logout(); // logout faz o redirect
-        } else if (status === 403) {
-          console.error("Acesso negado.");
-        } else if (status >= 500) {
-          console.error("Erro interno no servidor.");
-        }
-
-        // ❌ retorna o erro pro front tratar com toast, sem recarregar
-        return Promise.reject(error);
+      if (status === 401 && requestUrl.includes("/auth/login")) {
+           return Promise.reject(error);
       }
-    );
+      
+      if (status === 403) {
+          UIHelper.error("Acesso negado.");
+      } else if (status >= 500) {
+          UIHelper.error("Erro interno no servidor.");
+      }
+
+      console.log("Validando tempo de sessao", error, this.getToken())
+      return Promise.reject(error);
+    }
+  );
   }
 
-  // ======================================================
-  // 🔐 AUTENTICAÇÃO
-  // ======================================================
-
-  async login(login: string, password: string): Promise<{ token: string; userName: string }> {
-    console.log("pasasndo pelo login", localStorage)
+  public async refreshToken(): Promise<string | null> {
     try {
-      if (localStorage.getItem(this.TOKEN_KEY)) {
-        localStorage.removeItem(this.TOKEN_KEY);
-      }
+        console.log("refresh valida token", this.accessToken)
+        if (this.accessToken){
+          this.accessToken = null;
+        }
+        const response = await this.client.post<{ token: string }>("/auth/refresh-token"); 
+        const newAccessToken: string = response.data.token;
+        
+        this.accessToken = newAccessToken; 
+        console.log("refresh sucess", this.accessToken);
+    } catch (error: any) {
+        this.logout(); 
+        throw error; 
+    } finally {
+      return this.accessToken;
+    }
+  }
+
+  async login(login: string, password: string): Promise<{ token: string, userName: string }> {
+    try {
       const response = await this.client.post<{ token: string, userName: string }>("/auth/login", {
         login,
         password,
       });
       const { token, userName } = response.data;
       if (token) {
-        localStorage.setItem(this.TOKEN_KEY, token);
+        this.accessToken = token; 
       }
-      return { token, userName };
+      return { token , userName };
     } catch (error: any) {
       console.error("❌ Erro no login:", error);
       throw error;
     }
   }
 
-  logout() {
-    this.clearToken();
-    // redireciona dinamicamente para o contexto atual
-    const pathParts = window.location.pathname.split("/");
-    const contextPath = pathParts.length > 1 && pathParts[1] ? `/${pathParts[1]}` : "";
-    window.location.href = `${window.location.origin}${contextPath}/`;
+  async logout() {
+    try {
+        await this.client.post("/auth/logout"); 
+    } catch (e) {
+        console.error("Erro ao chamar endpoint de logout, limpando localmente.", e);
+    }
+    
+    this.accessToken = null;
   }
 
-  private clearToken() {
-    localStorage.removeItem(this.TOKEN_KEY);
+  public getToken(): string | null {
+    return this.accessToken; 
   }
-
-  // ======================================================
-  // ⚙️ EXECUÇÃO GENÉRICA DE SERVICES BACKEND
-  // ======================================================
 
   async invoke<T = any>(
     service: string,
@@ -124,11 +126,19 @@ class ServerClient {
         const msg = error.response.data?.message || "Erro inesperado no servidor.";
   
         if (status === 400) {
-          // Erro de negócio
           throw new Error(msg);
         } else if (status === 401) {
-          this.logout();
-          throw new Error("Sessão expirada. Faça login novamente.");
+          await this.refreshToken();
+          if (!this.accessToken){
+            console.log("chegou erro de token")
+            this.logout();
+            window.location.reload();
+            session.setMsgError("Sessão expirada. Faça login novamente.");
+            //throw new Error("Sessão expirada. Faça login novamente.");
+            return error;
+          } else {
+            return this.invoke(service, action, payload)
+          }
         } else {
           throw new Error(msg);
         }
@@ -137,10 +147,6 @@ class ServerClient {
       }
     }
   }
-
-  // ======================================================
-  // ⬇️ DOWNLOAD DE ARQUIVOS
-  // ======================================================
 
   async download(service: string, params?: any): Promise<void> {
     try {

@@ -46,7 +46,7 @@ public class PersistenceConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
         emf.setDataSource(dataSource);
-        emf.setPackagesToScan("br.com.meuapp.entidades");
+        emf.setPackagesToScan("br.com.meuapp.entidades", "br.com.meuapp.api.auth");
         emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         Properties props = new Properties();

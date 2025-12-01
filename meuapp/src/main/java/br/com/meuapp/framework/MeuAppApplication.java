@@ -7,7 +7,9 @@ import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 @ComponentScan(basePackages = { "br.com.meuapp.framework", 
 								"br.com.meuapp.config", 
 								"br.com.meuapp.api",
+								"br.com.meuapp.api.auth",
 								"br.com.meuapp.service",
+								"br.com.meuapp.dao",
 								"br.com.meuapp.exception",
 								"br.com.meuapp.persistence",   // ✅ necessário
 							    "br.com.meuapp.filters",       // ✅ adicione esta linha

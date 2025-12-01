@@ -2,12 +2,13 @@ import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import serverBack from "@/api/server";
 import { UIHelper } from "@/utils/UIHelper";
 import { useNavigate } from "react-router-dom";
 import Session from '@/utils/session';
 import { useAuth } from "@/context/AuthContext";
+import session from "@/utils/session"
 
 export default function Login() {
     const [login, setUsuario] = useState('');
@@ -15,10 +16,20 @@ export default function Login() {
     const [erroLogin, setErroLogin] = useState(false);
     const [erroSenha, setErroSenha] = useState(false);
     const navigate = useNavigate();
-    const { login: authLogin } = useAuth(); // ✅ pega a função de login e renomeia para authLogin
-  
+    const { login: authLogin } = useAuth(); 
+
+    useEffect(() => {
+      const storedError = session.getMsgError();
+
+      if (storedError) {
+          UIHelper.error(storedError)
+
+          session.removerMsgError();
+      }
+    }, []);
+
     const handleLogin = async (e?: React.FormEvent) => {
-      e?.preventDefault(); // ✅ protege tanto no submit quanto no click
+      e?.preventDefault(); 
     
       setErroLogin(false);
       setErroSenha(false);
@@ -39,13 +50,13 @@ export default function Login() {
         UIHelper.error("Preencha todos os campos obrigatórios.");
         return;
       }
-    
+
       try {
         const { token, userName }  = await serverBack.login(login, senha);
         Session.saveUser(userName);
         authLogin(token);
         UIHelper.success(`Bem-vindo, ${userName || "usuário"}!`);
-        navigate("/", { replace: true });
+        navigate('/', { replace: true });
       } catch (error: any) {
         console.error("❌ Erro de login:", error);
         UIHelper.error("Usuário ou senha incorretos.");
@@ -58,8 +69,8 @@ export default function Login() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '100vh',      // ocupa a altura total da viewport
-          width: '100vw',       // ocupa a largura total da viewport
+          height: '100vh',
+          width: '100vw', 
           background: 'linear-gradient(135deg, #1e88e5, #6a1b9a)',
           margin: 0,
           padding: 0,

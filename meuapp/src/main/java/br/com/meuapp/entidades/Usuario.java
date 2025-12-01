@@ -20,7 +20,7 @@ public class Usuario extends BaseEntity<Integer> {
 	@PreRemove
 	private void bloqueiaExclusaoAdmin() {
 		// Se o ID for 1, lançamos uma exceção
-        if (id != null && id.equals(1L)) {
+        if (id != null && id.equals(1)) {
             // Lançar uma exceção de Runtime específica
         	throw new UserException("Não é possível ecluir o usuário com o ID 1, apenas alterar os dados");
         }

@@ -1,19 +1,18 @@
-import Session from "@/utils/session";
-import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
-export default function ProtectedRoute({ children }: any) {
-  const [checked, setChecked] = useState(false);
-  const [isLogged, setIsLogged] = useState(false);
+export default function ProtectedRoute({}) {
+  const { isAuthenticated, isLoading } = useAuth();
 
-  useEffect(() => {
-    const user = Session.getUser();
-    setIsLogged(!!user);
-    setChecked(true);
-  }, []);
+  console.log("protectedrout", isAuthenticated, isLoading)
 
-  if (!checked) return null; // evita redirecionamento precoce
+  if (isLoading) {
+    return null;
+  }
 
-  return isLogged ? <Outlet /> : <Navigate to="/meuapp" replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
+  return <Outlet />;
 }
