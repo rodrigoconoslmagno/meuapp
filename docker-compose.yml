@@ -60,7 +60,7 @@ services:
       - ./secrets/pg_user.txt:/run/secrets/pg_user:ro
       - ./secrets/pg_password.txt:/run/secrets/pg_password:ro
       - ./secrets/pg_db.txt:/run/secrets/pg_db:ro
-      
+      - ./secrets/jwt_key.properties:/run/secrets/jwt_key:ro
     # Dependência: Garante que o DB inicie antes da aplicação
     depends_on:
       - postgres-meuapp

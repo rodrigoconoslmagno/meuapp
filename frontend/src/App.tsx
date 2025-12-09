@@ -8,17 +8,15 @@ import GlobalConfirm from "@/utils/GlobalConfirm";
 import GlobalToast from "@/utils/GlobalToast";
 import AppRoutes from "@/routes/AppRoutes";
 import { LayoutProvider } from "./componentes/Layout/LayoutContext";
-import { AuthProvider } from "@/context/AuthContext"; // ✅ importar o AuthProvider
+import { AuthProvider } from "@/context/AuthContext"; 
 import { BrowserRouter } from "react-router-dom";
 
-// 🔹 Detecta dinamicamente o contexto do Tomcat (ex: /meuapp, /clienteA, etc.)
-// Detecta dinamicamente o contexto base a partir do path atual
 const pathParts = window.location.pathname.split('/');
 const contextPath = pathParts.length > 1 && pathParts[1] ? `/${pathParts[1]}` : '';
 
 function App() {
   return (
-    <AuthProvider> {/* ✅ envolve toda a aplicação */}
+    <AuthProvider>
       <BrowserRouter basename={contextPath}>
         <LayoutProvider>
           <GlobalToast />

@@ -34,6 +34,7 @@ else
     SPRING_DATASOURCE_USERNAME=$(cat /run/secrets/pg_user)
     SPRING_DATASOURCE_PASSWORD=$(cat /run/secrets/pg_password)
     DB_NAME=$(cat /run/secrets/pg_db)
+    export JWT_SECRET_KEY=$(cat /run/secrets/jwt_key)
 fi
 
 # Exporta todas as variáveis para o ambiente do contêiner
