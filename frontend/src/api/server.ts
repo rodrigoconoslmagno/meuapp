@@ -134,7 +134,6 @@ class ServerClient {
             this.logout();
             window.location.reload();
             session.setMsgError("Sessão expirada. Faça login novamente.");
-            //throw new Error("Sessão expirada. Faça login novamente.");
             return error;
           } else {
             return this.invoke(service, action, payload)

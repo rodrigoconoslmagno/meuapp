@@ -23,6 +23,18 @@ const Session = {
       } catch {
         return null;
       }
+    },
+
+    setMsgError(msg: string){
+      sessionStorage.setItem("msgerror", msg)
+    },
+
+    getMsgError(){
+      return sessionStorage.getItem("msgerror")
+    },
+
+    removerMsgError(){
+      sessionStorage.removeItem("msgerror")
     }
   };
   
