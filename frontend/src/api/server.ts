@@ -49,7 +49,6 @@ class ServerClient {
           UIHelper.error("Erro interno no servidor.");
       }
 
-      console.log("Validando tempo de sessao", error, this.getToken())
       return Promise.reject(error);
     }
   );
@@ -57,7 +56,6 @@ class ServerClient {
 
   public async refreshToken(): Promise<string | null> {
     try {
-        console.log("refresh valida token", this.accessToken)
         if (this.accessToken){
           this.accessToken = null;
         }
@@ -65,7 +63,6 @@ class ServerClient {
         const newAccessToken: string = response.data.token;
         
         this.accessToken = newAccessToken; 
-        console.log("refresh sucess", this.accessToken);
     } catch (error: any) {
         this.logout(); 
         throw error; 
@@ -130,7 +127,6 @@ class ServerClient {
         } else if (status === 401) {
           await this.refreshToken();
           if (!this.accessToken){
-            console.log("chegou erro de token")
             this.logout();
             window.location.reload();
             session.setMsgError("Sessão expirada. Faça login novamente.");

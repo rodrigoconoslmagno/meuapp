@@ -21,11 +21,10 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>();
   const [isLoading, setIsLoading] = useState(true);
-  const isAuthenticated = !!token;
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const login = (newToken: string | null) => {
     setToken(newToken);
-    console.log("login", newToken, token, isAuthenticated)
   };
 
   const logout = async () => {
@@ -36,14 +35,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const validateSession = async () => {
+      if (serverBack.getToken()) {
+        setIsAuthenticated(true);
+        setIsLoading(false);
+        console.log("valida dentro")
+        return;
+      }
       try {
-        if (serverBack.getToken()) {
-          const newAccessToken: string | null = await serverBack.refreshToken(); 
-          login(newAccessToken);
-          console.log("refresh auth ", newAccessToken, token)
-        }
+        const newAccessToken: string | null = await serverBack.refreshToken(); 
+        login(newAccessToken);
+        setIsAuthenticated(true);
       } catch (error) {
         setToken(undefined); 
+        setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }

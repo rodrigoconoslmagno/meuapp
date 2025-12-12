@@ -16,16 +16,14 @@ import jakarta.annotation.PostConstruct;
 @Component
 public class JwtUtil {
 
-	// Carrega a chave secreta da variável de ambiente/propriedades
 	@Value("${jwt.secret-key}")
-    private String secretKeyString; // A string longa gerada por você
+    private String secretKeyString; 
     
     private final long expiration = 1000 * 60 * 60; // 1hora
     private Key key;
     
-    @PostConstruct // Inicializa a chave APENAS uma vez
+    @PostConstruct
     public void init() {
-        // Cria a chave persistente a partir da string lida
         this.key = Keys.hmacShaKeyFor(secretKeyString.getBytes());
     }
 
@@ -40,14 +38,12 @@ public class JwtUtil {
 
     public String generateRefreshToken(String username, Instant expiryDate) {
         Map<String, Object> claims = new HashMap<>();
-        // Você pode adicionar um claim de "type" para diferenciar, se quiser
         claims.put("type", "refresh");
         
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                // Define a expiração EXATAMENTE como a data calculada no RefreshTokenService
                 .setExpiration(Date.from(expiryDate)) 
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();

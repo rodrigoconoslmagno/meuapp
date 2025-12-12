@@ -1,4 +1,3 @@
-/* App.css — reset e helpers */
 :root {
   --sidebar-width: 260px;
   --sidebar-collapsed-width: 76px;
@@ -9,17 +8,14 @@
   --accent: #1e88e5;
 }
 
-/* reset */
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; padding: 0; width: 100%; }
 body { font-family: Inter, "Open Sans", "Helvetica Neue", Arial, sans-serif; background: var(--content-bg); color: #222; }
 
-/* helpers */
 .hidden { display: none !important; }
 .flex { display: flex; }
 .center { display:flex; align-items:center; justify-content:center; }
 .p-0 { padding: 0; }
 .m-0 { margin: 0; }
 
-/* ensure prime components don't force container sizing */
 #root, .layout-container, .layout-content { width: 100%; max-width: 100% !important; }

@@ -7,21 +7,16 @@ import serverBack from "@/api/server";
 import { UIHelper } from "@/utils/UIHelper";
 import { useNavigate } from "react-router-dom";
 
-// =======================================================
-// 💡 Portal reativo — observa o DOM até o header estar pronto
-// =======================================================
 export const HeaderActionsPortal = ({ children }: { children: React.ReactNode }) => {
   const [slot, setSlot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    // tenta pegar imediatamente
     const found = document.getElementById("header-actions-slot");
     if (found) {
       setSlot(found);
       return;
     }
 
-    // se não achou, observa o DOM até o elemento aparecer
     const observer = new MutationObserver(() => {
       const el = document.getElementById("header-actions-slot");
       if (el) {
@@ -39,9 +34,6 @@ export const HeaderActionsPortal = ({ children }: { children: React.ReactNode })
   return ReactDOM.createPortal(children, slot);
 };
 
-// =======================================================
-// 🔧 Componente principal CRUD
-// =======================================================
 interface CrudProps<T extends BaseEntity, F> {
   entityType: new () => T; 
   pageTitle: string;
@@ -84,16 +76,14 @@ export function Crud<T extends Record<string, any>, F = any>(props: CrudProps<T,
   
     let alreadySet = false;
   
-    // 🔹 Define o header apenas se o título for diferente do atual
     setHeader(prev => {
       if (prev.title === pageTitle) {
         alreadySet = true;
-        return prev; // não atualiza, evita loop
+        return prev;
       }
       return { title: pageTitle, actions: [] };
     });
   
-    // 🔹 Observa o DOM apenas se o header ainda não foi definido
     if (!alreadySet) {
       const observer = new MutationObserver(() => {
         const slot = document.getElementById("header-actions-slot");
@@ -114,7 +104,6 @@ export function Crud<T extends Record<string, any>, F = any>(props: CrudProps<T,
       const data = await serverBack.invoke<T[]>(serviceName, "listar", filters);
       setItems(data);
     } catch (error: any) {
-      console.error(`Erro ao listar ${serviceName}:`, error);
       UIHelper.error(error.message || "Erro ao carregar registros.");
     } finally {
       setLoading(false);

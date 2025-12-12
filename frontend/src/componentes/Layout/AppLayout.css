@@ -1,109 +1,73 @@
-/* src/componentes/Layout/AppLayout.css */
-
-/* ========================================================= */
-/* 1. LAYOUT GERAL (Sidebar + Conteúdo Principal) */
-/* ========================================================= */
 .app-screen-container {
     display: flex;
-    height: 100vh; /* Ocupa 100% da altura da viewport */
+    height: 100vh; 
     width: 100%;
     overflow: hidden; 
-    background-color: #f8fafc; /* Cor de fundo geral (bg-gray-50) */
+    background-color: #f8fafc;
 }
 
-/* 2. Contêiner do Conteúdo Principal (Direita: Header + Main) */
-/* Este é o PARENT do Header e do Main. É a chave para o empilhamento vertical. */
 .app-content-wrapper {
-    flex: 1; /* Ocupa todo o espaço horizontal restante (ao lado da Sidebar) */
+    flex: 1; 
     display: flex;
-    flex-direction: column; /* 💥 Alinha Header e Main em COLUNAS (empilhamento vertical) */
-    min-width: 0; /* Correção para flex-1 em contêineres horizontais */
+    flex-direction: column; 
+    min-width: 0; 
     height: 100%; 
-    overflow: hidden; /* O scroll será controlado pelo <main> */
+    overflow: hidden; 
     position: relative;
 }
 
-/* ========================================================= */
-/* 3. ESTILOS DO HEADER (CONTROLA ALINHAMENTO INTERNO) */
-/* ========================================================= */
 .app-header {
-    height: 64px; /* Altura fixa (h-16 do Tailwind) */
-    flex-shrink: 0; /* 🔑 Garante que o header mantenha a altura e não encolha */
-    z-index: 40; /* Garante que fique acima do conteúdo principal */
-    width: 100%; /* Garante largura total para o 'justify-content' */
-    
-    /* 💥 ALINHAMENTO INTERNO (Título Esquerda, Botões Direita) */
-    display: flex; 
-    align-items: center; /* Alinha o conteúdo verticalmente ao centro */
-    justify-content: space-between; /* 🔑 Espaça o título dos botões */
+    height: 64px; 
+    flex-shrink: 0;
+    z-index: 40;
+    width: 100%; 
 
-    /* Estilos Visuais */
-    padding-left: 1.5rem; /* px-6 do Tailwind */
-    padding-right: 1.5rem; /* px-6 do Tailwind */
+    display: flex; 
+    align-items: center;
+    justify-content: space-between; 
+
+    padding-left: 1.5rem; 
+    padding-right: 1.5rem; 
     background: linear-gradient(90deg, #2563eb, #3b82f6);
     color: white;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
 }
 
-
-/* ========================================================= */
-/* 4. ESTILOS DO MAIN CONTENT */
-/* ========================================================= */
 .app-main-content {
-    flex: 1; /* 🔑 ESSENCIAL: Ocupa todo o espaço vertical restante */
-    min-height: 0; /* 🔑 ESSENCIAL: Permite que o Main Content use o overflow-y corretamente */
-    overflow-y: auto; /* Permite scroll vertical interno no conteúdo */
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto; 
     scroll-behavior: smooth;
     position: relative;
     z-index: 0;
-    /* O padding (p-4) será mantido no JSX para fácil ajuste. */
 }
 
-/* ========================================================= */
-/* 5. ESTILOS PADRÃO PARA BOTÕES NO HEADER (via Portal) */
-/* Aplica-se a TODOS os botões dentro do slot do portal */
-/* ========================================================= */
 #header-actions-slot button.p-button {
-    /* Garante que o texto e ícones fiquem brancos no fundo azul do header */
     color: white !important; 
     
-    /* Remove o fundo de botões tipo 'text' (Filtro e Fechar) */
     background: transparent !important;
     border: none !important;
 }
 
 #header-actions-slot button.p-button:hover {
-    /* Efeito hover uniforme para todos os botões do header */
     background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Nota: Botões 'primary' (Novo/Salvar) geralmente trazem seu próprio fundo/cor */
-/* O !important no color e background: transparent garante que o "Filtro" e o "X" sejam brancos. */
-
-/* ========================================================= */
-/* 6. FOCO - ESTILO MODERNO PARA BOTÕES PRIMÁRIOS */
-/* Aplica-se aos botões fora do Header (em formulários e CrudView) */
-/* ========================================================= */
-
 .p-button.p-button-primary {
-    /* Gradiente suave */
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
     color: white !important;
     border: none !important;
     font-weight: 600;
-    
-    /* Sombra para dar profundidade e foco */
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4); /* Sombra azul */
+
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
     transition: all 0.2s ease;
 }
 
 .p-button.p-button-primary:hover {
-    /* Gradiente um pouco mais claro ou deslocado no hover */
     background: linear-gradient(135deg, #4c90f8 0%, #3b82f6 100%) !important;
-    /* Sombra mais forte no hover */
     box-shadow: 0 6px 15px rgba(37, 99, 235, 0.5); 
-    transform: translateY(-1px); /* Pequeno levantamento */
+    transform: translateY(-1px);
 }
 
 .p-button.p-button-primary:active {
@@ -111,20 +75,15 @@
     box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
 }
 
-/* ========================================================= */
-/* 7. FOCO - BOTÃO PRIMÁRIO DENTRO DO HEADER (FUNDO AZUL) */
-/* ========================================================= */
-
 #header-actions-slot button.p-button-primary {
-    /* Fundo branco para se destacar do gradiente azul do header */
     background-color: #ffffff !important;
-    color: #2563eb !important; /* Cor primária do texto */
+    color: #2563eb !important; 
     border: none !important;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Sombra discreta */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); 
 }
 
 #header-actions-slot button.p-button-primary:hover {
-    background-color: #e0e7ff !important; /* Azul claro no hover */
+    background-color: #e0e7ff !important;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 }

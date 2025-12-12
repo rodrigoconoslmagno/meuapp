@@ -44,41 +44,34 @@ export default function Usuarios() {
     }
   };
 
-    // 🔐 Validação final antes de salvar
     const beforeSave = (data: Usuario) => {
       const senhaAtual = senhaRef.current;
       const confirmarAtual = confirmarRef.current;
       const isNovo = !data.id;
   
-      // Caso novo usuário → senha obrigatória
       if (isNovo && (!senhaAtual || !confirmarAtual)) {
         UIHelper.error("Informe e confirme a senha para cadastrar o usuário.");
         throw new Error("Senha obrigatória no novo cadastro");
       }
   
-      // Caso tenha digitado apenas uma das duas
       if ((senhaAtual && !confirmarAtual) || (!senhaAtual && confirmarAtual)) {
         UIHelper.error("Ambos os campos de senha devem ser preenchidos.");
         throw new Error("Campos de senha incompletos");
       }
-  
-      // Senhas diferentes
+
       if (senhaAtual && confirmarAtual && senhaAtual !== confirmarAtual) {
         UIHelper.error("As senhas não coincidem.");
         throw new Error("Senhas diferentes");
       }
   
-      // Se não preencheu senha, remove do payload
       if (!senhaAtual) {
         const { senha: _, ...rest } = data;
         return rest as Usuario;
       }
-  
-      // Tudo certo → inclui senha
+
       return { ...data, senhaAtual };
     };
 
-   // 🔄 Ao clicar em "Novo", limpar campos locais
    const afterNew = () => {
     setSenha(undefined);
     setConfirmarSenha(undefined);
@@ -86,14 +79,12 @@ export default function Usuarios() {
     setErroConfirmar("");
   };   
 
-  // ✅ Executa automaticamente quando senha ou confirmação mudam
   useEffect(() => {
     senhaRef.current = senha;
     confirmarRef.current = confirmarSenha;
     validarSenhas(senha, confirmarSenha);
   }, [senha, confirmarSenha]);
 
-  // ✅ CERTO: Memoriza o array para não mudar a referência
   const acoesExtras = useMemo(() => [
     {
       label: "Exportar",
@@ -101,7 +92,7 @@ export default function Usuarios() {
       onClick: () => console.log("Exportar usuários"),
       className: "p-button-secondary",
     },
-  ], []); // [] significa que nunca muda
+  ], []); 
 
   return (
     <Crud<Usuario, FiltroUsuario>
@@ -131,7 +122,7 @@ export default function Usuarios() {
                     value={senha} 
                     onChange={(v) => {
                         setSenha(v);
-                        onChange("senha", v); // atualiza no model se precisar enviar ao back
+                        onChange("senha", v); 
                       } 
                     }
                     col="6" 

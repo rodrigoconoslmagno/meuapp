@@ -1,35 +1,25 @@
 #!/bin/sh
 set -e
 
-# ADICIONE ISTO PARA DEBUG:
 echo "--- VARIÁVEIS DE AMBIENTE INJETADAS ---"
 printenv
 echo "---------------------------------------"
 
-# 1. Determina o perfil ativo (dev ou prod)
-# SPRING_PROFILES_ACTIVE será injetado pelo docker-compose ou pelo Railway
 export ACTIVE_PROFILE=${SPRING_PROFILES_ACTIVE:-dev}
 
 echo "Iniciando aplicação no ambiente: ${ACTIVE_PROFILE}"
 
-# 2. Leitura das Credenciais e HOST:
 if [ "$ACTIVE_PROFILE" = "prod" ]; then
-    # -- Ambiente Railway/Produção --
-    
-    # Usamos as variáveis PG* que o Railway SEMPRE injeta.
     DB_HOST="${DB_HOST}"
     BD_PORT="${DB_PORT}"
     
-    # 🛑 CRUCIAL: FORÇAMOS O NOME DO DB PARA O NOME CORRETO (meuapp)
     DB_NAME="${DB_NAME}" 
-    
-    # Usamos as credenciais que o Railway injetou (PGUSER, PGPASSWORD)
+
     SPRING_DATASOURCE_USERNAME="${DB_USER}"
     SPRING_DATASOURCE_PASSWORD="${DB_PASS}"
     JWT_SECRET_KEY="${JWT_SECRET_KEY}"
     
 else
-    # -- Ambiente Local/Desenvolvimento --
     DB_HOST="postgres-meuapp"
     DB_PORT="5432"
     SPRING_DATASOURCE_USERNAME=$(cat /run/secrets/pg_user)
@@ -38,7 +28,6 @@ else
     JWT_SECRET_KEY=$(cat /run/secrets/jwt_key)
 fi
 
-# Exporta todas as variáveis para o ambiente do contêiner
 export DB_HOST
 export DB_PORT
 export SPRING_DATASOURCE_USERNAME
@@ -49,8 +38,6 @@ export SPRING_JPA_HIBERNATE_DDL_AUTO="${SPRING_JPA_HIBERNATE_DDL_AUTO}"
 
 echo "Configurando a conexão com: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}"
 
-# 3. Construção dos Argumentos da JVM (CATALINA_OPTS)
-# A URL é construída AQUI para garantir o prefixo JDBC e o nome do DB correto.
 export CATALINA_OPTS="$CATALINA_OPTS \
     -Dspring.profiles.active=${ACTIVE_PROFILE} \
     -Dspring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME} \
@@ -61,5 +48,4 @@ export CATALINA_OPTS="$CATALINA_OPTS \
 
 echo "Injetando propriedades da JVM via CATALINA_OPTS..."
 
-# 4. Executa o comando padrão do Tomcat
 exec catalina.sh run

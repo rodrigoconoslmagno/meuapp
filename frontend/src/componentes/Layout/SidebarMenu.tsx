@@ -1,4 +1,3 @@
-// src/componentes/Layout/SidebarMenu.tsx
 import { motion, AnimatePresence } from "framer-motion";
 import "./SidebarMenu.css";
 import { menuItems } from "@/config/menuConfig";
@@ -6,19 +5,19 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { MenuItem } from "@/types/MenuItem";
 import Session from "@/utils/session";
-import { useAuth } from "@/context/AuthContext"; // ✅ importa o contexto
+import { useAuth } from "@/context/AuthContext"; 
 
 interface SidebarMenuProps {
   collapsed: boolean;
   toggleCollapsed: () => void;
-  className?: string; // 🚨 Adicionado: Prop opcional
+  className?: string;
 }
 
 export default function SidebarMenu({ collapsed, toggleCollapsed, className }: SidebarMenuProps) {
   const [openSub, setOpenSub] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth(); // ✅ pega o método de logout
+  const { logout } = useAuth(); 
 
   const handleItemClick = (item: MenuItem) => {
     if (item.children) {
@@ -45,11 +44,10 @@ export default function SidebarMenu({ collapsed, toggleCollapsed, className }: S
     : "U";
   return (
     <motion.aside
-      className={`sidebar ${className || ""}`} // 🚨 Aplicado: Use a prop aqui
+      className={`sidebar ${className || ""}`} 
       animate={{ width: collapsed ? 70 : 250 }}
       transition={{ duration: 0.25 }}
     >
-     {/* Profile */}
       <div className="sidebar-profile">
         <div className="avatar">
           {userInitials}
@@ -68,7 +66,6 @@ export default function SidebarMenu({ collapsed, toggleCollapsed, className }: S
         )}
       </div>
      
-      {/* Header */}
       <div className="sidebar-header">
         {!collapsed && <h3 className="logo">MeuApp</h3>}
 
@@ -77,7 +74,6 @@ export default function SidebarMenu({ collapsed, toggleCollapsed, className }: S
         </button>
       </div>
 
-      {/* Menu */}
       <ul className="menu-list">
         {menuItems.map((item: MenuItem) => (
           <li key={item.label}>
@@ -108,7 +104,6 @@ export default function SidebarMenu({ collapsed, toggleCollapsed, className }: S
               )}
             </div>
 
-            {/* Submenu */}
             <AnimatePresence>
               {!collapsed && item.children && openSub === item.label && (
                 <motion.ul

@@ -44,9 +44,7 @@ export function CrudView<T extends Record<string, any>>(props: CrudViewProps<T>)
                         header={col.header} 
                         sortable 
                         body={(rowData) => {
-                            // Se o dev passou um body customizado, usa ele
                             if (col.body) return col.body(rowData);
-                                // Caso contrário, usa a formatação padrão
                                 const value = rowData[col.field];
                                 return Formatter.formatValue(value, String(col.field));
                             }} />

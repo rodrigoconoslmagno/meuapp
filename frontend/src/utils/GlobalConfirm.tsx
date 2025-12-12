@@ -1,4 +1,3 @@
-// src/components/shared/GlobalConfirm.tsx
 import { ConfirmDialog } from "primereact/confirmdialog";
 
 export default function GlobalConfirm() {

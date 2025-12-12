@@ -16,7 +16,6 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class PersistenceConfig {
 
-	// 🔑 INJEÇÃO DOS VALORES PASSADOS PELO DOCKER VIA -D
     @Value("${spring.datasource.url}")
     private String dbUrl;
     
@@ -33,8 +32,7 @@ public class PersistenceConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        
-        // ✅ USA AS VARIÁVEIS INJETADAS
+
         dataSource.setUrl(dbUrl); 
         dataSource.setUsername(dbUsername);
         dataSource.setPassword(dbPassword);
@@ -59,7 +57,6 @@ public class PersistenceConfig {
         return emf;
     }
 
-    // ✅ Este é o bean que o interceptor precisa
     @Bean(name = "transactionManager")
     public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);

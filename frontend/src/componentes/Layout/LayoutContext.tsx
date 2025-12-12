@@ -10,7 +10,7 @@ interface HeaderAction {
 interface LayoutContextType {
   title: string;
   actions: HeaderAction[];
-  header: { title: string; actions: HeaderAction[] }; // ✅ novo campo para facilitar acesso direto
+  header: { title: string; actions: HeaderAction[] };
   setHeader: (
     titleOrUpdater:
       | string
@@ -33,9 +33,6 @@ const LayoutContext = createContext<LayoutContextType>({
 
 export const useLayout = () => useContext(LayoutContext);
 
-// ======================================================
-// 🧠 Hook para páginas controlarem o header do layout
-// ======================================================
 export function usePageLayout() {
   const { setHeader } = useLayout();
 
@@ -84,7 +81,7 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
       value={{
         title,
         actions,
-        header: { title, actions }, // ✅ adiciona o header consolidado
+        header: { title, actions }, 
         setHeader,
         layoutReady,
         setLayoutReady,

@@ -1,4 +1,3 @@
-import React from "react";
 import { Checkbox } from "primereact/checkbox";
 import classNames from "classnames";
 
@@ -9,7 +8,7 @@ interface EditCheckBoxProps {
   onChange: (value: boolean) => void;
   disabled?: boolean;
   required?: boolean;
-  col?: string; // Ex: "12", "6", "4"
+  col?: string;
 }
 
 export function EditCheckBox({

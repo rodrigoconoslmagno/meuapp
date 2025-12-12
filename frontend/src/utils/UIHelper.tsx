@@ -6,12 +6,10 @@ import { Button } from "primereact/button";
 export class UIHelper {
   private static toastRef: RefObject<Toast> | null = null;
 
-  // ✅ Define o Toast global (setado uma vez no App)
   static registerToast(ref: RefObject<Toast>) {
     this.toastRef = ref;
   }
 
-  // ✅ Mostra uma mensagem genérica
   static showMessage(
     severity: "success" | "info" | "warn" | "error",
     summary: string,
@@ -21,7 +19,6 @@ export class UIHelper {
     this.toastRef?.current?.show({ severity, summary, detail, life });
   }
 
-  // ✅ Atalhos práticos
   static success(detail: string, summary = "Sucesso") {
     this.showMessage("success", summary, detail);
   }
@@ -38,7 +35,6 @@ export class UIHelper {
     this.showMessage("info", summary, detail);
   }
 
-  // ✅ Confirmação com callback
   static confirm(
     message: string,
     accept: () => void,
@@ -54,7 +50,6 @@ export class UIHelper {
       acceptClassName: "p-button-danger",
       accept: accept,
       reject: reject,
-      // 👇 personalizando os botões com autoFocus
       footer: (
         <div className="flex justify-end gap-2">
           <Button
@@ -67,7 +62,7 @@ export class UIHelper {
             label="Sim"
             icon="pi pi-check"
             onClick={accept}
-            autoFocus // 👈 foca automaticamente
+            autoFocus
             className="p-button-danger"
           />
         </div>

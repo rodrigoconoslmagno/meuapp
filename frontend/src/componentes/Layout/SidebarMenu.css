@@ -1,20 +1,17 @@
-/* Sidebar geral */
 .sidebar {
-  /* MUITO IMPORTANTE: Use 100% e não 100vh, pois o pai já controla a altura */
   height: 100% !important;
   background: #263238;
   color: white;
-  overflow-y: auto; /* Permite scroll se o menu for muito alto */
+  overflow-y: auto;
   overflow-x: hidden;
   border-right: 1px solid rgba(255,255,255,0.06);
   display: flex;
   flex-direction: column;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0; /* ESTE é o mais importante para o layout horizontal */
+  flex-shrink: 0;
 }
 
-/* Header */
 .sidebar-header {
   display: flex;
   align-items: center;
@@ -28,7 +25,6 @@
   font-size: 1.15rem;
 }
 
-/* Collapse button */
 .collapse-btn {
   background: transparent;
   border: none;
@@ -37,7 +33,6 @@
   font-size: 1.1rem;
 }
 
-/* Menu list */
 .menu-list {
   list-style: none;
   padding: 10px 6px;
@@ -45,7 +40,6 @@
   flex: 1;
 }
 
-/* Item */
 .menu-item {
   display: flex;
   align-items: center;
@@ -69,13 +63,11 @@
   font-size: 1.2rem;
 }
 
-/* Arrow submenu */
 .submenu-arrow {
   margin-left: auto;
   opacity: 0.8;
 }
 
-/* Submenu */
 .submenu {
   list-style: none;
   padding-left: 40px;
@@ -92,7 +84,7 @@
 .submenu-item:hover {
   background: rgba(255,255,255,0.06);
 }
-/* Sidebar geral */
+
 .sidebar {
   background: #263238;
   color: white;
@@ -103,7 +95,6 @@
   flex-direction: column;
 }
 
-/* Header */
 .sidebar-header {
   display: flex;
   align-items: center;
@@ -117,7 +108,6 @@
   font-size: 1.15rem;
 }
 
-/* Collapse button */
 .collapse-btn {
   background: transparent;
   border: none;
@@ -126,7 +116,6 @@
   font-size: 1.1rem;
 }
 
-/* Menu list */
 .menu-list {
   list-style: none;
   padding: 10px 6px;
@@ -134,7 +123,6 @@
   flex: 1;
 }
 
-/* Item */
 .menu-item {
   display: flex;
   align-items: center;
@@ -158,13 +146,11 @@
   font-size: 1.2rem;
 }
 
-/* Arrow submenu */
 .submenu-arrow {
   margin-left: auto;
   opacity: 0.8;
 }
 
-/* Submenu */
 .submenu {
   list-style: none;
   padding-left: 40px;
@@ -182,7 +168,6 @@
   background: rgba(255,255,255,0.06);
 }
 
-/* Profile Section */
 .sidebar-profile {
   display: flex;
   align-items: center;

@@ -1,4 +1,3 @@
-import React from "react";
 import { InputText } from "primereact/inputtext";
 import classNames from "classnames";
 
@@ -10,18 +9,12 @@ interface EditTextProps {
   placeholder?: string;
   disabled?: boolean;
   required?: boolean;
-  col?: string; // Ex: "12", "6", "4"
+  col?: string; 
   maxLength?: number;
-  errorMessage?: string; // 🔥 opcional
-  type?: string; // ex: "text", "password", etc.
+  errorMessage?: string;
+  type?: string;
 }
 
-/**
- * Campo de texto genérico integrado com PrimeReact
- * - Label flutuante
- * - Suporte a required e erro visual automático
- * - Exibição opcional de mensagem customizada
- */
 export function EditText({
   id,
   label,
@@ -52,11 +45,8 @@ export function EditText({
           disabled={disabled}
           placeholder={placeholder}
           maxLength={maxLength}
-          required={required} // ⚙️ usado pela validação automática do Crud
+          required={required} 
           className={classNames("w-full", {
-            // 🔴 Borda vermelha se:
-            // - errorMessage customizado, OU
-            // - o Crud tiver marcado o campo como p-invalid (validação automática)
             "p-invalid border-red-500": !!errorMessage,
           })}
         />
@@ -68,7 +58,6 @@ export function EditText({
         </label>
       </span>
 
-      {/* 🔎 exibe mensagem se existir, senão mantém padrão visual */}
       {errorMessage ? (
         <small className="p-error text-red-500 mt-1 ml-1">
           {errorMessage}

@@ -1,4 +1,3 @@
-// src/components/shared/GlobalToast.tsx
 import { useEffect, useRef } from "react";
 import { Toast } from "primereact/toast";
 import { UIHelper } from "@/utils/UIHelper";
