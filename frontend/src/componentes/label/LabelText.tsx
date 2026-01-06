@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { getColSpanClass } from '@/utils/LayoutUtils';
 
 interface LabelTextProps {
   id: string;
@@ -16,32 +17,26 @@ export function LabelText({
   className,
 }: LabelTextProps) {
   return (
-    <div
-      className={classNames(
-        `p-col-${col}`,
-        "md:col-" + col,
-        "flex flex-col mb-3 relative",
-        className
-      )}
-    >
-      <span className="p-float-label w-full relative">
+    <div className={classNames(getColSpanClass(col), "relative", className)}>
+      <span className="p-float-label w-full block">
         <div
-          className="p-inputtext w-full border border-gray-300 rounded text-gray-800 bg-gray-100 flex items-center px-3"
-          style={{
-            height: "2.75rem",
-            lineHeight: "2.75rem", 
-            paddingTop: "0",
-            paddingBottom: "0",
-          }}
+          className={classNames(
+            "w-full min-h-[40px] flex items-center px-3 rounded-md border border-slate-200 bg-slate-50/50 text-slate-800 text-base transition-colors",
+            "hover:border-slate-300"
+          )}
         >
-          {value}
+          {value || <span className="text-slate-400 opacity-50">—</span>} 
         </div>
 
         <label
-          className="text-gray-600 text-sm absolute bg-white px-1"
+          htmlFor={id}
+          className="ml-2 px-1 text-base font-medium text-slate-500 bg-white"
           style={{
-            top: "-0.75rem",
-            left: "0.75rem",
+            transform: 'translateY(-50%)',
+            top: '-0.25rem',
+            left: '0',
+            position: 'absolute',
+            pointerEvents: 'none'
           }}
         >
           {label}

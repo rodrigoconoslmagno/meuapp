@@ -1,3 +1,17 @@
+@charset "UTF-8";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "system-ui", "sans-serif";
+} 
+
+@layer base {
+  /* Garante que o box-sizing não quebre componentes que dependem de dimensões fixas */
+  *, ::after, ::before {
+    box-sizing: border-box;
+  }
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -9,7 +23,6 @@
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
@@ -42,10 +55,7 @@ body {
   background-attachment: fixed;
   background-size: cover;
   overflow: hidden;
-}
-
-.flex, .flex-row {
-  gap: 0 !important;
+  color: rgba(255, 255, 255, 0.87);
 }
 
 h1 {
@@ -53,23 +63,53 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+.p-toast-message .p-toast-icon-close {
+  background: transparent !important; 
+  color: #333333 !important; 
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0.5rem !important; 
+  transition: background-color 0.2s;
+}
+
+.p-toast-message .p-toast-icon-close .p-icon {
+  font-family: 'primeicons' !important; 
+  font-size: 1rem !important; 
+  display: block !important;
+  line-height: 1 !important;
+  color: #333333 !important;
+}
+
+.p-toast-message .p-toast-icon-close:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Impede que o label diminua de tamanho ao flutuar */
+.p-float-label input:focus ~ label,
+.p-float-label input.p-filled ~ label,
+.p-float-label textarea:focus ~ label,
+.p-float-label textarea.p-filled ~ label,
+.p-float-label .p-inputwrapper-focus ~ label,
+.p-float-label .p-inputwrapper-filled ~ label {
+    font-size: 1rem !important;
+    transform: translateY(-0.25rem) scale(1) !important;
+}
+
+.p-float-label {
+    margin-top: 0.5rem;
+}
+
+.grid-cols-1, .md:grid-cols-2, .lg:grid-cols-4 {
+  row-gap: 1.75rem !important; 
 }
 
 @media (prefers-color-scheme: light) {

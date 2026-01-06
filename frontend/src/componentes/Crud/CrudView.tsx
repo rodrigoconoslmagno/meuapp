@@ -63,8 +63,10 @@ export function CrudView<T extends Record<string, any>>(props: CrudViewProps<T>)
       )}
 
       {mode === "form" && (
-        <div className="form-card">
-          <div className="grid">{formContent}</div>
+        <div className="p-4 bg-slate-50 min-h-screen w-full">
+          <div className="flex flex-col items-stretch gap-4 w-full max-w-6xl mx-auto">
+            {formContent}
+          </div>
         </div>
       )}
     </div>

@@ -1,5 +1,6 @@
 import Dashboard from "@/componentes/Paginas/Dashboard";
-import Produtos from "@/componentes/Paginas/Produtos";
+import Mercadorias from "@/componentes/Paginas/Mercadoria";
+import Participantes from "@/componentes/Paginas/Participante";
 import Usuarios from "@/componentes/Paginas/Usuarios";
 import { MenuItem } from "@/types/MenuItem";
 
@@ -20,9 +21,8 @@ export const menuItems: MenuItem[] = [
       label: "Cadastros",
       icon: "pi pi-folder",
       children: [
-        { label: "Clientes", icon: "pi pi-id-card", path: "/clientes" },
-        { label: "Produtos", icon: "pi pi-box", path: "/produtos", component: Produtos },
-        { label: "Fornecedores", icon: "pi pi-truck", path: "/fornecedores" },
+        { label: "Participante", icon: "pi pi-id-card", path: "/participante", component: Participantes },
+        // { label: "Mercadoria", icon: "pi pi-box", path: "/mercadoria", component: Mercadorias },
       ],
     },
     {

@@ -1,7 +1,8 @@
 import { Mercadoria } from "@/entidades/Mercadoria"
-import { Crud } from "../Crud/Crud"
+import { Crud } from "@/componentes/Crud/Crud"
+import { FormGroup } from "../Crud/FormGroup";
 
-export default function Produtos() {
+export default function Mercadorias() {
     return (
       <Crud<Mercadoria, null>
         pageTitle="Mercadoria"
@@ -12,7 +13,9 @@ export default function Produtos() {
         emptyFilter={null}
         itemIdField="id"
         renderForm={(mercadoria, onChange) => 
-          <></>
+          <>
+
+          </>
         }
       />
     );

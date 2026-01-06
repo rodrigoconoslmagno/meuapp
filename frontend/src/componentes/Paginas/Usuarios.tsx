@@ -2,10 +2,11 @@ import { Crud } from "@/componentes/Crud/Crud";
 import { EditText } from "@/componentes/Inputs/EditText";
 import { Usuario } from "@/entidades/Usuario";
 import { LabelText } from "../label/LabelText";
-import Utils from "@/utils/Utils";
+import { Formatter } from "@/utils/Formatter";
 import { EditCheckBox } from "../checkbox/EditCheckBox";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { UIHelper } from "@/utils/UIHelper";
+import { FormGroup } from "@/componentes/Crud/FormGroup"
 
 interface FiltroUsuario {
   nome?: string;
@@ -112,37 +113,39 @@ export default function Usuarios() {
       beforeSave={beforeSave}
       renderForm={(user, onChange) => (
         <>
-          <LabelText id="dtCriacao" label="Data Criação" value={Utils.formatarDataHora(user.dataCriacao)} col="6" />
-          <LabelText id="dtArualizacao" label="Data Alteração" value={Utils.formatarDataHora(user.dataAtualizacao)} col="6" />
-          <EditText id="name" label="Nome" value={user.nome} onChange={(v) => onChange("nome", v)} col="6" required />
-          <EditText id="login" label="Login" value={user.login} onChange={(v) => onChange("login", v)} col="6" required/>
+          <FormGroup title="Dados Principais">
+            <LabelText id="dtCriacao" label="Data Criação" value={Formatter.formatarDataHora(user.dataCriacao)} col="6" />
+            <LabelText id="dtArualizacao" label="Data Alteração" value={Formatter.formatarDataHora(user.dataAtualizacao)} col="6" />
+            <EditText id="name" label="Nome" value={user.nome} onChange={(v) => onChange("nome", v)} col="6" required />
+            <EditText id="login" label="Login" value={user.login} onChange={(v) => onChange("login", v)} col="6" required/>
 
-          <EditText id="senha" 
-                    label="Senha" 
-                    value={senha} 
-                    onChange={(v) => {
-                        setSenha(v);
-                        onChange("senha", v); 
-                      } 
-                    }
-                    col="6" 
-                    required={!!senha || !!confirmarSenha}
-                    errorMessage={erroSenha}
-                    type="password"/>
-
-          <EditText id="confirmasenha" 
-                    label="Repetir senha" 
-                    value={confirmarSenha} 
-                    onChange={(v) => {
-                        setConfirmarSenha(v);
+            <EditText id="senha" 
+                      label="Senha" 
+                      value={senha} 
+                      onChange={(v) => {
+                          setSenha(v);
+                          onChange("senha", v); 
+                        } 
                       }
-                    } 
-                    col="6" 
-                    required={!!senha || !!confirmarSenha}
-                    errorMessage={erroConfirmar}
-                    type="password"/>
+                      col="6" 
+                      required={!!senha || !!confirmarSenha}
+                      errorMessage={erroSenha}
+                      type="password"/>
 
-          <EditCheckBox id="chkAtivo" label="Ativo" checked={user.ativo} onChange={(v) => onChange("ativo", v)} col="6" />
+            <EditText id="confirmasenha" 
+                      label="Repetir senha" 
+                      value={confirmarSenha} 
+                      onChange={(v) => {
+                          setConfirmarSenha(v);
+                        }
+                      } 
+                      col="6" 
+                      required={!!senha || !!confirmarSenha}
+                      errorMessage={erroConfirmar}
+                      type="password"/>
+
+            <EditCheckBox id="chkAtivo" label="Ativo" checked={user.ativo} onChange={(v) => onChange("ativo", v)} col="6" />
+          </FormGroup>
         </>
       )}
       renderFilter={(filter, onChange) => (

@@ -6,9 +6,12 @@ import { useEffect, useState } from 'react';
 import serverBack from "@/api/server";
 import { UIHelper } from "@/utils/UIHelper";
 import { useNavigate } from "react-router-dom";
+import { IconField } from 'primereact/iconfield';
+import { InputIcon } from 'primereact/inputicon';
 import Session from '@/utils/session';
 import { useAuth } from "@/context/AuthContext";
 import session from "@/utils/session"
+import './Login.css'
 
 export default function Login() {
     const [login, setUsuario] = useState('');
@@ -65,32 +68,19 @@ export default function Login() {
   
     return (
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-          width: '100vw', 
-          background: 'linear-gradient(135deg, #1e88e5, #6a1b9a)',
-          margin: 0,
-          padding: 0,
-        }}
+        className="login-wrapper"
       >
         <Card
           title="Acesse sua conta"
-          className="shadow-6 p-4"
-          style={{
-            width: '400px',
-            maxWidth: '90%',
-            borderRadius: '1.5rem',
-            background: 'rgba(255, 255, 255, 0.95)',
-          }}
+          className="login-card shadow-4"
         >
           <div className="p-fluid">
-              <div className="field">
-                <label htmlFor="login">Usuário</label>
-                <span className="p-input-icon-left">
-                  <i className="pi pi-user" />
+              <div className="field mb-4">
+                <label htmlFor="login" className="block mb-2 font-bold">
+                  Usuário
+                </label>
+                <IconField iconPosition="left">
+                  <InputIcon className="pi pi-user" />
                   <InputText
                     id="login"
                     className={erroLogin ? "p-invalid" : ""}  
@@ -100,20 +90,22 @@ export default function Login() {
                     autoComplete="username"
                     required
                   />
-                </span>
+                  </IconField>
               </div>
 
-              <div className="field mt-3">
-                <label htmlFor="senha" >Senha</label>
+              <div className="field mb-4">
+                <label htmlFor="senha" className="block mb-2 font-bold">
+                  Senha
+                </label>
                 <Password
                   inputId="senha"
-                  className={erroSenha ? "p-invalid" : ""}
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
                   feedback={false}
                   toggleMask
                   placeholder="Digite sua senha"
                   autoComplete="current-password"
+                  className={erroSenha ? "p-invalid" : ""}
                 />
               </div>
 
@@ -121,7 +113,7 @@ export default function Login() {
                 type="button"
                 label="Entrar"
                 icon="pi pi-sign-in"
-                className="mt-4 p-button-rounded p-button-primary w-full"
+                className="p-button-raised"
                 onClick={handleLogin}
               />
             </div>

@@ -1,5 +1,6 @@
 import { Checkbox } from "primereact/checkbox";
 import classNames from "classnames";
+import { getColSpanClass } from '@/utils/LayoutUtils'; 
 
 interface EditCheckBoxProps {
   id: string;
@@ -23,9 +24,8 @@ export function EditCheckBox({
   return (
     <div
       className={classNames(
-        `p-col-${col}`,
-        "md:col-" + col,
-        "flex flex-row items-center gap-2 mb-3"
+        getColSpanClass(col), 
+        "flex flex-row items-center gap-3 self-center h-[2.5rem]"
       )}
     >
       <Checkbox
@@ -33,9 +33,16 @@ export function EditCheckBox({
         checked={!!checked}
         onChange={(e) => onChange(!!e.checked)}
         disabled={disabled}
+        className="transition-shadow"
       />
-      <label htmlFor={id} className="text-gray-700">
-        {label} {required && <span className="text-red-500">*</span>}
+      <label 
+        htmlFor={id} 
+        className={classNames(
+          "text-base font-medium cursor-pointer select-none", 
+          disabled ? "text-slate-400" : "text-slate-700"
+        )}
+      >
+        {label} {required && <span className="text-red-500 font-bold">*</span>}
       </label>
     </div>
   );

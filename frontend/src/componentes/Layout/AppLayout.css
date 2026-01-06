@@ -1,89 +1,82 @@
 .app-screen-container {
     display: flex;
     height: 100vh; 
-    width: 100%;
+    width: 100vw;
     overflow: hidden; 
     background-color: #f8fafc;
 }
 
 .app-content-wrapper {
-    flex: 1; 
+    flex: 1;
     display: flex;
     flex-direction: column; 
     min-width: 0; 
     height: 100%; 
-    overflow: hidden; 
-    position: relative;
+    overflow: hidden;
 }
 
 .app-header {
     height: 64px; 
     flex-shrink: 0;
-    z-index: 40;
+    z-index: 100 !important;
     width: 100%; 
-
-    display: flex; 
-    align-items: center;
-    justify-content: space-between; 
-
-    padding-left: 1.5rem; 
-    padding-right: 1.5rem; 
+    padding: 0 1.5rem; 
     background: linear-gradient(90deg, #2563eb, #3b82f6);
     color: white;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .app-main-content {
     flex: 1;
-    min-height: 0;
     overflow-y: auto; 
-    scroll-behavior: smooth;
-    position: relative;
-    z-index: 0;
+    padding: 1.25rem;
+    background-color: #f8fafc;
 }
 
-#header-actions-slot button.p-button {
-    color: white !important; 
-    
+.header-actions-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#header-actions-slot button.p-button,
+.header-actions-container button.p-button.p-button-text {
+    color: white !important;
     background: transparent !important;
     border: none !important;
 }
 
-#header-actions-slot button.p-button:hover {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.p-button.p-button-primary {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-    color: white !important;
-    border: none !important;
-    font-weight: 600;
-
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
-    transition: all 0.2s ease;
-}
-
-.p-button.p-button-primary:hover {
-    background: linear-gradient(135deg, #4c90f8 0%, #3b82f6 100%) !important;
-    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.5); 
-    transform: translateY(-1px);
-}
-
-.p-button.p-button-primary:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
-}
-
-#header-actions-slot button.p-button-primary {
+#header-actions-slot .p-button.p-button-primary,
+.header-actions-container .p-button.p-button-primary {
     background-color: #ffffff !important;
-    color: #2563eb !important; 
+    color: #2563eb !important;
     border: none !important;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); 
+    font-weight: 700 !important;
 }
 
-#header-actions-slot button.p-button-primary:hover {
-    background-color: #e0e7ff !important;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+#header-actions-slot .p-button.p-button-primary .p-button-label,
+.header-actions-container .p-button.p-button-primary .p-button-label,
+#header-actions-slot .p-button.p-button-primary .p-button-icon,
+.header-actions-container .p-button.p-button-primary .p-button-icon {
+    color: #2563eb !important;
+}
+
+#header-actions-slot .p-button.p-button-primary:hover,
+.header-actions-container .p-button.p-button-primary:hover {
+    background-color: #f0f7ff !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 767px) {
+    .header-actions-container {
+        display: none !important;
+    }
+    .app-main-content {
+        padding-bottom: 5rem !important;
+    }
+}
+
+.p-speeddial {
+    z-index: 3000 !important;
 }
