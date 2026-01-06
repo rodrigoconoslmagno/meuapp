@@ -29,7 +29,7 @@ public class GenericController {
     @PostMapping
     public ResponseEntity<?> execute(@RequestBody GenericRequest request) {
         try {
-            String serviceName = request.getService(); // ex: "usuarioService"
+            String serviceName = request.getService();
             Object serviceBean = context.getBean(serviceName);
 
             Method method = findMethod(serviceBean, request.getAction(), request.getPayload());

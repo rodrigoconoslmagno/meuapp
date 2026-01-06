@@ -7,7 +7,6 @@ export default function GlobalToast() {
 
   useEffect(() => {
     UIHelper.registerToast(toast);
-    console.log("✅ GlobalToast registrado com sucesso");
   }, []);
 
   return <Toast ref={toast} position="top-right" />;
